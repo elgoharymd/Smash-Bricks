@@ -20,6 +20,7 @@
             --shop-item-size: 80px;
             --paddle-gradient: linear-gradient(135deg, #e94560, #ff6b6b);
             --paddle-glow: radial-gradient(circle, rgba(233, 69, 96, 0.8) 0%, rgba(255, 107, 107, 0) 70%);
+            --brick-border: 2px solid rgba(255, 255, 255, 0.3);
         }
         
         * {
@@ -79,26 +80,6 @@
             max-width: 800px;
             padding: 0 20px;
             position: relative;
-        }
-        
-        .logo {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 10px;
-            background: radial-gradient(circle, var(--primary-color), var(--secondary-color));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 5px 20px rgba(248, 187, 34, 0.5);
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            overflow: hidden;
-        }
-        
-        .logo img {
-            width: 80%;
-            height: 80%;
-            object-fit: contain;
         }
         
         #game-title {
@@ -732,6 +713,27 @@
             background: linear-gradient(135deg, #1a1a2e, #2d2d44);
         }
         
+        /* اللوجو في المتجر */
+        .shop-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            background: radial-gradient(circle, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(248, 187, 34, 0.5);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .shop-logo img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+        }
+        
         /* تحسينات للأجهزة المحمولة */
         @media (max-width: 768px) {
             .controls {
@@ -774,11 +776,6 @@
                 min-width: 180px;
                 padding: 10px 20px;
             }
-            
-            .logo {
-                width: 100px;
-                height: 100px;
-            }
         }
         
         @media (max-width: 480px) {
@@ -804,11 +801,6 @@
                 font-size: 0.9rem;
             }
             
-            .logo {
-                width: 80px;
-                height: 80px;
-            }
-            
             .control-btn {
                 width: 50px;
                 height: 50px;
@@ -823,9 +815,6 @@
 <body>
     <div id="game-container">
         <div id="game-header">
-            <div class="logo">
-                <img src="https://via.placeholder.com/100/1a1a2e/f8bb22?text=SB" alt="Smash Bricks Logo">
-            </div>
             <h1 id="game-title" class="float">Smash Bricks</h1>
         </div>
         
@@ -866,6 +855,1654 @@
             <div class="control-btn" id="left-btn">
                 <i class="fas fa-arrow-left"></i>
             </div>
+            <div class="control-btn" id="right-btn">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+        
+        <div id="start-screen" class="active">
+            <h2 class="screen-title pulse">Smash Bricks</h2>
+            <p class="screen-subtitle">اكسر جميع الطوب لتتقدم للمستوى التالي!</p>
+            <div class="button-group">
+                <button class="screen-button" id="start-button">
+                    <i class="fas fa-play"></i> ابدأ اللعبة
+                </button>
+                <button class="screen-button" id="levels-button">
+                    <i class="fas fa-list"></i> الجولات
+                </button>
+                <button class="screen-button" id="shop-button">
+                    <i class="fas fa-store"></i> المتجر
+                </button>
+                <button class="screen-button" id="how-to-play-button">
+                    <i class="fas fa-question-circle"></i> كيفية اللعب
+                </button>
+            </div>
+        </div>
+        
+        <div id="game-over-screen">
+            <h2 class="screen-title">انتهت اللعبة!</h2>
+            <div id="final-score">النقاط النهائية: 0</div>
+            <div id="high-score-final" class="screen-subtitle">أعلى نتيجة: 0</div>
+            <div class="button-group">
+                <button class="screen-button" id="restart-button">
+                    <i class="fas fa-redo"></i> إعادة المحاولة
+                </button>
+                <button class="screen-button" id="menu-button">
+                    <i class="fas fa-home"></i> القائمة الرئيسية
+                </button>
+            </div>
+        </div>
+        
+        <div id="level-up-screen">
+            <h2 class="screen-title">مبروك!</h2>
+            <div class="screen-subtitle">لقد أكملت المستوى <span id="completed-level">1</span></div>
+            <div id="level-reward" class="screen-subtitle">+100 نقطة مكافأة</div>
+            <button class="screen-button" id="next-level-button">
+                <i class="fas fa-arrow-right"></i> المستوى التالي
+            </button>
+        </div>
+        
+        <div id="how-to-play-screen">
+            <h2 class="screen-title">كيفية اللعب</h2>
+            <div id="how-to-play-content">
+                <ul>
+                    <li>استخدم مفاتيح الأسهم أو الأزرار في الأسفل لتحريك المضرب</li>
+                    <li>يمكنك أيضًا تحريك المضرب بواسطة الفأرة أو اللمس</li>
+                    <li>اكسر جميع الطوب لإنهاء المستوى</li>
+                    <li>لديك 3 أرواح، إذا سقطت الكرة تحت المضرب تخسر حياة</li>
+                    <li>كل مستوى يصبح أكثر صعوبة مع طوب خاص وتأثيرات مختلفة</li>
+                    <li>بعض الطوب يحتاج لضربات متعددة ليتحطم</li>
+                    <li>اجمع المكافآت لتحصل على قدرات خاصة</li>
+                    <li>يمكنك شراء كرات جديدة من المتجر باستخدام النقاط التي تجمعها</li>
+                </ul>
+                <p>حاول تحقيق أعلى نتيجة وتخطي جميع المستويات الـ 30!</p>
+            </div>
+            <button class="screen-button" id="back-button">
+                <i class="fas fa-arrow-right"></i> العودة
+            </button>
+        </div>
+        
+        <div id="levels-screen">
+            <h2 class="screen-title">الجولات</h2>
+            <div id="levels-container"></div>
+            <button class="screen-button" id="back-to-menu-button">
+                <i class="fas fa-arrow-right"></i> العودة
+            </button>
+        </div>
+        
+        <div id="shop-screen">
+            <div class="coins-display">
+                <i class="fas fa-coins"></i>
+                <span id="coins-amount">0</span>
+            </div>
+            <h2 class="screen-title">متجر الكرات</h2>
+            <div class="shop-logo">
+                <img src="https://via.placeholder.com/100/1a1a2e/f8bb22?text=SB" alt="Smash Bricks Logo">
+            </div>
+            <div id="shop-container"></div>
+            <button class="screen-button" id="back-to-menu-button-shop">
+                <i class="fas fa-arrow-right"></i> العودة
+            </button>
+        </div>
+    </div>
+
+    <audio id="brick-hit-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="paddle-hit-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-quick-jump-arcade-game-239.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="explosion-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-explosion-1699.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="level-complete-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="game-over-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // عناصر DOM
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const livesElement = document.getElementById('lives');
+        const powerUpsElement = document.getElementById('power-ups');
+        const highScoreElement = document.getElementById('high-score');
+        const levelElement = document.getElementById('level');
+        const progressBar = document.getElementById('progress');
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const levelUpScreen = document.getElementById('level-up-screen');
+        const howToPlayScreen = document.getElementById('how-to-play-screen');
+        const levelsScreen = document.getElementById('levels-screen');
+        const shopScreen = document.getElementById('shop-screen');
+        const startButton = document.getElementById('start-button');
+        const levelsButton = document.getElementById('levels-button');
+        const shopButton = document.getElementById('shop-button');
+        const howToPlayButton = document.getElementById('how-to-play-button');
+        const backButton = document.getElementById('back-button');
+        const restartButton = document.getElementById('restart-button');
+        const menuButton = document.getElementById('menu-button');
+        const nextLevelButton = document.getElementById('next-level-button');
+        const finalScoreElement = document.getElementById('final-score');
+        const highScoreFinalElement = document.getElementById('high-score-final');
+        const completedLevelElement = document.getElementById('completed-level');
+        const levelRewardElement = document.getElementById('level-reward');
+        const leftBtn = document.getElementById('left-btn');
+        const rightBtn = document.getElementById('right-btn');
+        const levelEffect = document.getElementById('level-effect');
+        const levelsContainer = document.getElementById('levels-container');
+        const shopContainer = document.getElementById('shop-container');
+        const coinsAmountElement = document.getElementById('coins-amount');
+        const backToMenuButton = document.getElementById('back-to-menu-button');
+        const backToMenuButtonShop = document.getElementById('back-to-menu-button-shop');
+        
+        // عناصر الصوت
+        const brickHitSound = document.getElementById('brick-hit-sound');
+        const paddleHitSound = document.getElementById('paddle-hit-sound');
+        const explosionSound = document.getElementById('explosion-sound');
+        const levelCompleteSound = document.getElementById('level-complete-sound');
+        const gameOverSound = document.getElementById('game-over-sound');
+        
+        // تهيئة اللعبة
+        let score = 0;
+        let highScore = localStorage.getItem('brickBreakerHighScore') || 0;
+        let lives = 3;
+        let level = 1;
+        let gameRunning = false;
+        let powerUps = 0;
+        let bricks = [];
+        let particles = [];
+        let confettiParticles = [];
+        let lastTime = 0;
+        let gameSpeed = 1;
+        let coins = parseInt(localStorage.getItem('brickBreakerCoins')) || 0;
+        let unlockedLevels = JSON.parse(localStorage.getItem('brickBreakerUnlockedLevels')) || {1: true};
+        let selectedBall = localStorage.getItem('brickBreakerSelectedBall') || 'default';
+        let unlockedBalls = JSON.parse(localStorage.getItem('brickBreakerUnlockedBalls')) || {'default': true};
+        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        // أنواع الكرات المتاحة في المتجر
+        const ballTypes = {
+            'default': {
+                name: 'الكلاسيكية',
+                color: '#f8bb22',
+                price: 0,
+                pattern: 'solid'
+            },
+            'fire': {
+                name: 'الكرة النارية',
+                color: 'radial-gradient(circle at 30% 30%, #ff6600, #ff3300)',
+                price: 500,
+                pattern: 'fire'
+            },
+            'water': {
+                name: 'كرة الماء',
+                color: 'radial-gradient(circle at 30% 30%, #00ccff, #0066ff)',
+                price: 500,
+                pattern: 'water'
+            },
+            'electric': {
+                name: 'الكرة الكهربائية',
+                color: 'radial-gradient(circle at 30% 30%, #ffff00, #ffcc00)',
+                price: 750,
+                pattern: 'electric'
+            },
+            'rainbow': {
+                name: 'كرة قوس قزح',
+                color: 'conic-gradient(red, yellow, lime, cyan, blue, magenta, red)',
+                price: 1000,
+                pattern: 'rainbow'
+            },
+            'galaxy': {
+                name: 'كرة المجرة',
+                color: 'radial-gradient(circle at 30% 30%, #6600ff, #330066)',
+                price: 1500,
+                pattern: 'galaxy'
+            },
+            'sun': {
+                name: 'كرة الشمس',
+                color: 'radial-gradient(circle at 30% 30%, #ffcc00, #ff6600)',
+                price: 2000,
+                pattern: 'sun'
+            },
+            'moon': {
+                name: 'كرة القمر',
+                color: 'radial-gradient(circle at 30% 30%, #cccccc, #999999)',
+                price: 2000,
+                pattern: 'moon'
+            }
+        };
+        
+        // الكرة
+        const ball = {
+            x: 0,
+            y: 0,
+            radius: 0,
+            dx: 0,
+            dy: 0,
+            color: "#f8bb22",
+            defaultSpeed: 4,
+            trail: [],
+            pattern: 'solid'
+        };
+        
+        // المضرب
+        const paddle = {
+            width: 0,
+            height: 0,
+            x: 0,
+            y: 0,
+            color: "#e94560",
+            speed: 8,
+            isMovingLeft: false,
+            isMovingRight: false
+        };
+        
+        // إعدادات الطوب
+        const brickSettings = {
+            colors: ["#0f3460", "#3d5a80", "#4ecdc4", "#ff6b6b", "#ffd166", "#06d6a0", "#118ab2", "#073b4c", "#7209b7", "#f72585"],
+            specialTypes: ['normal', 'double', 'triple', 'solid', 'bonus', 'explosive', 'moving'],
+            padding: 15,
+            offsetTop: 60,
+            offsetLeft: 30
+        };
+        
+        // تأثيرات المستويات
+        const levelEffects = [
+            {}, // المستوى 1 - لا تأثير
+            { background: '#16213e', ballColor: '#f8bb22' }, // المستوى 2
+            { background: '#1a1a2e', ballColor: '#4ecdc4' }, // المستوى 3
+            { background: '#0f3460', ballColor: '#ff6b6b' }, // المستوى 4
+            { background: '#1f1f3d', ballColor: '#ffd166' }, // المستوى 5
+            { background: '#2d2d44', ballColor: '#06d6a0' }, // المستوى 6
+            { background: '#3a3a4a', ballColor: '#118ab2' }, // المستوى 7
+            { background: '#1e1e2c', ballColor: '#7209b7' }, // المستوى 8
+            { background: '#2a2a3a', ballColor: '#f72585' }, // المستوى 9
+            { background: '#1a1a2e', ballColor: '#f8bb22', brickPattern: 'stripes' }, // المستوى 10
+            { background: '#16213e', ballColor: '#4ecdc4', brickPattern: 'checker' }, // المستوى 11
+            { background: '#0f3460', ballColor: '#ff6b6b', brickPattern: 'gradient' }, // المستوى 12
+            { background: '#1f1f3d', ballColor: '#ffd166', brickPattern: 'circles' }, // المستوى 13
+            { background: '#2d2d44', ballColor: '#06d6a0', brickPattern: 'stripes' }, // المستوى 14
+            { background: '#3a3a4a', ballColor: '#118ab2', brickPattern: 'checker' }, // المستوى 15
+            { background: '#1e1e2c', ballColor: '#7209b7', brickPattern: 'gradient' }, // المستوى 16
+            { background: '#2a2a3a', ballColor: '#f72585', brickPattern: 'circles' }, // المستوى 17
+            { background: '#1a1a2e', ballColor: '#f8bb22', brickPattern: 'random' }, // المستوى 18
+            { background: '#16213e', ballColor: '#4ecdc4', brickPattern: 'random' }, // المستوى 19
+            { background: '#0f3460', ballColor: '#ff6b6b', brickPattern: 'random' }, // المستوى 20
+            { background: '#1f1f3d', ballColor: '#ffd166', brickPattern: 'random' }, // المستوى 21
+            { background: '#2d2d44', ballColor: '#06d6a0', brickPattern: 'random' }, // المستوى 22
+            { background: '#3a3a4a', ballColor: '#118ab2', brickPattern: 'random' }, // المستوى 23
+            { background: '#1e1e2c', ballColor: '#7209b7', brickPattern: 'random' }, // المستوى 24
+            { background: '#2a2a3a', ballColor: '#f72585', brickPattern: 'random' }, // المستوى 25
+            { background: '#1a1a2e', ballColor: '#f8bb22', brickPattern: 'rainbow' }, // المستوى 26
+            { background: '#16213e', ballColor: '#4ecdc4', brickPattern: 'rainbow' }, // المستوى 27
+            { background: '#0f3460', ballColor: '#ff6b6b', brickPattern: 'rainbow' }, // المستوى 28
+            { background: '#1f1f3d', ballColor: '#ffd166', brickPattern: 'rainbow' }, // المستوى 29
+            { background: '#2d2d44', ballColor: '#06d6a0', brickPattern: 'rainbow' }  // المستوى 30
+        ];
+        
+        // ضبط حجم الكنفاس
+        function resizeCanvas() {
+            const canvasWrapper = document.getElementById('canvas-wrapper');
+            canvas.width = canvasWrapper.offsetWidth;
+            canvas.height = canvasWrapper.offsetHeight;
+            
+            // إعادة تعيين مواقع العناصر عند تغيير الحجم
+            if (gameRunning) {
+                resetBallAndPaddle();
+                createBricks();
+            }
+        }
+        
+        // تهيئة الكرة والمضرب
+        function initBallAndPaddle() {
+            ball.radius = Math.max(canvas.width * 0.015, 8);
+            ball.defaultSpeed = Math.max(canvas.width * 0.007, 4);
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height - 50;
+            ball.dx = ball.defaultSpeed * (1 + (level-1)*0.05);
+            ball.dy = -ball.defaultSpeed * (1 + (level-1)*0.05);
+            ball.color = levelEffects[level-1]?.ballColor || "#f8bb22";
+            ball.trail = [];
+            ball.pattern = ballTypes[selectedBall].pattern;
+            
+            paddle.width = Math.max(canvas.width * 0.15, 80);
+            paddle.height = Math.max(canvas.height * 0.02, 10);
+            paddle.x = (canvas.width - paddle.width) / 2;
+            paddle.y = canvas.height - paddle.height - 10;
+            paddle.speed = Math.max(canvas.width * 0.01, 8);
+        }
+        
+        // إعادة تعيين الكرة والمضرب
+        function resetBallAndPaddle() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height - 50;
+            ball.dx = ball.defaultSpeed * (1 + (level-1)*0.05) * (Math.random() > 0.5 ? 1 : -1);
+            ball.dy = -ball.defaultSpeed * (1 + (level-1)*0.05);
+            ball.trail = [];
+            
+            paddle.x = (canvas.width - paddle.width) / 2;
+        }
+        
+        // إنشاء الطوب للمستوى الحالي
+        function createBricks() {
+            bricks = [];
+            
+            // تحديد عدد الصفوف والأعمدة بناءً على المستوى
+            let rows, cols;
+            if (level <= 5) {
+                rows = 3 + Math.floor(level / 2);
+                cols = 5 + Math.floor(level / 2);
+            } else if (level <= 15) {
+                rows = 5 + Math.floor(level / 3);
+                cols = 7 + Math.floor(level / 3);
+            } else {
+                rows = 8 + Math.floor(level / 4);
+                cols = 10 + Math.floor(level / 4);
+            }
+            
+            // تحديد عرض وارتفاع الطوبة بناءً على المساحة المتاحة
+            const brickWidth = Math.max((canvas.width - brickSettings.offsetLeft * 2 - (cols - 1) * brickSettings.padding) / cols, 30);
+            const brickHeight = Math.max((canvas.height * 0.4 - brickSettings.offsetTop - (rows - 1) * brickSettings.padding) / rows, 10);
+            
+            // إنشاء مصفوفة الطوب
+            for (let c = 0; c < cols; c++) {
+                bricks[c] = [];
+                for (let r = 0; r < rows; r++) {
+                    // تحديد نوع الطوبة
+                    let type = 'normal';
+                    let hitsRequired = 1;
+                    let points = 10 * level;
+                    
+                    // زيادة صعوبة الطوب مع تقدم المستويات
+                    if (level > 5 && Math.random() < 0.1 + (level-5)*0.02) {
+                        type = brickSettings.specialTypes[Math.floor(Math.random() * brickSettings.specialTypes.length)];
+                        
+                        if (type === 'double') {
+                            hitsRequired = 2;
+                            points = 20 * level;
+                        } else if (type === 'triple') {
+                            hitsRequired = 3;
+                            points = 30 * level;
+                        } else if (type === 'solid') {
+                            hitsRequired = 5;
+                            points = 50 * level;
+                        } else if (type === 'bonus') {
+                            hitsRequired = 1;
+                            points = 100 * level;
+                        } else if (type === 'explosive') {
+                            hitsRequired = 1;
+                            points = 15 * level;
+                        }
+                    }
+                    
+                    bricks[c][r] = {
+                        x: 0,
+                        y: 0,
+                        width: brickWidth,
+                        height: brickHeight,
+                        status: 1,
+                        type: type,
+                        hits: 0,
+                        hitsRequired: hitsRequired,
+                        points: points,
+                        color: brickSettings.colors[Math.floor(Math.random() * brickSettings.colors.length)],
+                        moving: type === 'moving' ? (Math.random() * 2 - 1) * 2 : 0
+                    };
+                }
+            }
+            
+            // تحديث شريط التقدم
+            updateProgressBar();
+        }
+        
+        // رسم الكرة مع تأثير الذيل
+        function drawBall() {
+            // رسم الذيل
+            for (let i = 0; i < ball.trail.length; i++) {
+                const alpha = i / ball.trail.length * 0.6;
+                ctx.beginPath();
+                ctx.arc(ball.trail[i].x, ball.trail[i].y, ball.radius * (0.5 + 0.5 * (i/ball.trail.length)), 0, Math.PI * 2);
+                
+                if (ball.pattern === 'fire') {
+                    const gradient = ctx.createRadialGradient(
+                        ball.trail[i].x, ball.trail[i].y, 0,
+                        ball.trail[i].x, ball.trail[i].y, ball.radius * (0.5 + 0.5 * (i/ball.trail.length))
+                    );
+                    gradient.addColorStop(0, `rgba(255, 100, 0, ${alpha})`);
+                    gradient.addColorStop(1, `rgba(255, 200, 0, ${alpha * 0.5})`);
+                    ctx.fillStyle = gradient;
+                } else if (ball.pattern === 'water') {
+                    ctx.fillStyle = `rgba(0, 150, 255, ${alpha})`;
+                } else if (ball.pattern === 'electric') {
+                    ctx.fillStyle = `rgba(255, 255, 0, ${alpha})`;
+                } else if (ball.pattern === 'rainbow') {
+                    const hue = (i * 10 + Date.now() / 50) % 360;
+                    ctx.fillStyle = `hsla(${hue}, 100%, 50%, ${alpha})`;
+                } else if (ball.pattern === 'galaxy') {
+                    ctx.fillStyle = `rgba(100, 0, 255, ${alpha})`;
+                } else if (ball.pattern === 'sun') {
+                    ctx.fillStyle = `rgba(255, 200, 0, ${alpha})`;
+                } else if (ball.pattern === 'moon') {
+                    ctx.fillStyle = `rgba(200, 200, 200, ${alpha})`;
+                } else {
+                    ctx.fillStyle = `rgba(248, 187, 34, ${alpha})`;
+                }
+                
+                ctx.fill();
+                ctx.closePath();
+            }
+            
+            // رسم الكرة
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            
+            if (ball.pattern === 'fire') {
+                const gradient = ctx.createRadialGradient(
+                    ball.x - ball.radius * 0.3, ball.y - ball.radius * 0.3, ball.radius * 0.1,
+                    ball.x, ball.y, ball.radius
+                );
+                gradient.addColorStop(0, '#ff6600');
+                gradient.addColorStop(0.5, '#ff3300');
+                gradient.addColorStop(1, '#ff0000');
+                ctx.fillStyle = gradient;
+            } else if (ball.pattern === 'water') {
+                const gradient = ctx.createRadialGradient(
+                    ball.x - ball.radius * 0.3, ball.y - ball.radius * 0.3, ball.radius * 0.1,
+                    ball.x, ball.y, ball.radius
+                );
+                gradient.addColorStop(0, '#00ccff');
+                gradient.addColorStop(1, '#0066ff');
+                ctx.fillStyle = gradient;
+            } else if (ball.pattern === 'electric') {
+                const gradient = ctx.createRadialGradient(
+                    ball.x - ball.radius * 0.3, ball.y - ball.radius * 0.3, ball.radius * 0.1,
+                    ball.x, ball.y, ball.radius
+                );
+                gradient.addColorStop(0, '#ffff00');
+                gradient.addColorStop(1, '#ffcc00');
+                ctx.fillStyle = gradient;
+            } else if (ball.pattern === 'rainbow') {
+                const gradient = ctx.createConicGradient(0, ball.x, ball.y);
+                gradient.addColorStop(0, 'red');
+                gradient.addColorStop(0.166, 'yellow');
+                gradient.addColorStop(0.333, 'lime');
+                gradient.addColorStop(0.5, 'cyan');
+                gradient.addColorStop(0.666, 'blue');
+                gradient.addColorStop(0.833, 'magenta');
+                gradient.addColorStop(1, 'red');
+                ctx.fillStyle = gradient;
+            } else if (ball.pattern === 'galaxy') {
+                const gradient = ctx.createRadialGradient(
+                    ball.x - ball.radius * 0.3, ball.y - ball.radius * 0.3, ball.radius * 0.1,
+                    ball.x, ball.y, ball.radius
+                );
+                gradient.addColorStop(0, '#6600ff');
+                gradient.addColorStop(1, '#330066');
+                ctx.fillStyle = gradient;
+            } else if (ball.pattern === 'sun') {
+                const gradient = ctx.createRadialGradient(
+                    ball.x - ball.radius * 0.3, ball.y - ball.radius * 0.3, ball.radius * 0.1,
+                    ball.x, ball.y, ball.radius
+                );
+                gradient.addColorStop(0, '#ffcc00');
+                gradient.addColorStop(1, '#ff6600');
+                ctx.fillStyle = gradient;
+            } else if (ball.pattern === 'moon') {
+                const gradient = ctx.createRadialGradient(
+                    ball.x - ball.radius * 0.3, ball.y - ball.radius * 0.3, ball.radius * 0.1,
+                    ball.x, ball.y, ball.radius
+                );
+                gradient.addColorStop(0, '#cccccc');
+                gradient.addColorStop(1, '#999999');
+                ctx.fillStyle = gradient;
+            } else {
+                ctx.fillStyle = ball.color;
+            }
+            
+            ctx.fill();
+            ctx.closePath();
+            
+            // تأثير إشعاع للكرة
+            const gradient = ctx.createRadialGradient(
+                ball.x, ball.y, ball.radius,
+                ball.x, ball.y, ball.radius * 2
+            );
+            
+            if (ball.pattern === 'fire') {
+                gradient.addColorStop(0, 'rgba(255, 100, 0, 0.8)');
+                gradient.addColorStop(1, 'rgba(255, 100, 0, 0)');
+            } else if (ball.pattern === 'water') {
+                gradient.addColorStop(0, 'rgba(0, 150, 255, 0.8)');
+                gradient.addColorStop(1, 'rgba(0, 150, 255, 0)');
+            } else if (ball.pattern === 'electric') {
+                gradient.addColorStop(0, 'rgba(255, 255, 0, 0.8)');
+                gradient.addColorStop(1, 'rgba(255, 255, 0, 0)');
+            } else if (ball.pattern === 'rainbow') {
+                gradient.addColorStop(0, 'rgba(255, 0, 0, 0.8)');
+                gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+            } else if (ball.pattern === 'galaxy') {
+                gradient.addColorStop(0, 'rgba(100, 0, 255, 0.8)');
+                gradient.addColorStop(1, 'rgba(100, 0, 255, 0)');
+            } else if (ball.pattern === 'sun') {
+                gradient.addColorStop(0, 'rgba(255, 200, 0, 0.8)');
+                gradient.addColorStop(1, 'rgba(255, 200, 0, 0)');
+            } else if (ball.pattern === 'moon') {
+                gradient.addColorStop(0, 'rgba(200, 200, 200, 0.8)');
+                gradient.addColorStop(1, 'rgba(200, 200, 200, 0)');
+            } else {
+                gradient.addColorStop(0, ball.color.replace(')', ', 0.8)').replace('rgb', 'rgba'));
+                gradient.addColorStop(1, ball.color.replace(')', ', 0)').replace('rgb', 'rgba'));
+            }
+            
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius * 2, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // تحديث الذيل
+            ball.trail.push({x: ball.x, y: ball.y});
+            if (ball.trail.length > 10) {
+                ball.trail.shift();
+            }
+        }
+        
+        // رسم المضرب
+        function drawPaddle() {
+            // تأثير التوهج
+            const glow = ctx.createRadialGradient(
+                paddle.x + paddle.width / 2, paddle.y + paddle.height / 2, 0,
+                paddle.x + paddle.width / 2, paddle.y + paddle.height / 2, paddle.width
+            );
+            glow.addColorStop(0, paddle.color.replace(')', ', 0.8)').replace('rgb', 'rgba'));
+            glow.addColorStop(1, paddle.color.replace(')', ', 0)').replace('rgb', 'rgba'));
+            
+            ctx.beginPath();
+            ctx.roundRect(
+                paddle.x, 
+                paddle.y - 5, 
+                paddle.width, 
+                paddle.height + 10, 
+                [paddle.height / 2 + 5, paddle.height / 2 + 5, 10, 10]
+            );
+            ctx.fillStyle = glow;
+            ctx.fill();
+            
+            // المضرب الرئيسي
+            ctx.beginPath();
+            ctx.roundRect(paddle.x, paddle.y, paddle.width, paddle.height, paddle.height / 2);
+            ctx.fillStyle = 'var(--paddle-gradient)';
+            ctx.fill();
+            ctx.closePath();
+            
+            // تأثير ثلاثي الأبعاد
+            ctx.beginPath();
+            ctx.roundRect(paddle.x + 3, paddle.y + 3, paddle.width - 6, paddle.height - 6, (paddle.height - 6) / 2);
+            ctx.fillStyle = `rgba(255, 255, 255, 0.2)`;
+            ctx.fill();
+            ctx.closePath();
+            
+            // تأثير حدود متوهجة
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        // رسم الطوب
+        function drawBricks() {
+            const effect = levelEffects[level-1] || {};
+            
+            for (let c = 0; c < bricks.length; c++) {
+                for (let r = 0; r < bricks[c].length; r++) {
+                    const brick = bricks[c][r];
+                    if (brick.status === 1) {
+                        const brickX = c * (brick.width + brickSettings.padding) + brickSettings.offsetLeft;
+                        const brickY = r * (brick.height + brickSettings.padding) + brickSettings.offsetTop;
+                        
+                        brick.x = brickX;
+                        brick.y = brickY;
+                        
+                        // تحريك الطوب المتحرك
+                        if (brick.moving !== 0) {
+                            brick.x += brick.moving;
+                            if (brick.x < brickSettings.offsetLeft || brick.x + brick.width > canvas.width - brickSettings.offsetLeft) {
+                                brick.moving = -brick.moving;
+                            }
+                        }
+                        
+                        ctx.beginPath();
+                        ctx.rect(brick.x, brick.y, brick.width, brick.height);
+                        
+                        // تحديد لون الطوبة بناءً على نوعها
+                        let brickColor = brick.color;
+                        if (brick.type === 'double') brickColor = '#3d5a80';
+                        else if (brick.type === 'triple') brickColor = '#4ecdc4';
+                        else if (brick.type === 'solid') brickColor = '#073b4c';
+                        else if (brick.type === 'bonus') brickColor = '#f8bb22';
+                        else if (brick.type === 'explosive') brickColor = '#ef476f';
+                        else if (brick.type === 'moving') brickColor = '#7209b7';
+                        
+                        // جعل الطوب شفاف جزئياً
+                        ctx.fillStyle = brickColor.replace(')', ', 0.7)').replace('rgb', 'rgba');
+                        ctx.fill();
+                        
+                        // تأثير حدود ملونة
+                        ctx.strokeStyle = lightenColor(brickColor, 30);
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                        
+                        // عرض نقاط الطوبة داخلها
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                        ctx.font = `bold ${Math.min(brick.height * 0.4, 12)}px Tajawal`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(brick.points.toString(), brick.x + brick.width / 2, brick.y + brick.height / 2);
+                        
+                        // تطبيق أنماط خاصة للمستويات المتقدمة
+                        if (effect.brickPattern === 'stripes') {
+                            const stripeGradient = ctx.createLinearGradient(brick.x, brick.y, brick.x, brick.y + brick.height);
+                            stripeGradient.addColorStop(0, brickColor);
+                            stripeGradient.addColorStop(0.5, 'rgba(255,255,255,0.3)');
+                            stripeGradient.addColorStop(1, brickColor);
+                            ctx.fillStyle = stripeGradient;
+                            ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                        } 
+                        else if (effect.brickPattern === 'checker') {
+                            ctx.fillStyle = (c + r) % 2 === 0 ? brickColor : lightenColor(brickColor, 30);
+                            ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                        }
+                        else if (effect.brickPattern === 'gradient') {
+                            const gradient = ctx.createLinearGradient(brick.x, brick.y, brick.x + brick.width, brick.y + brick.height);
+                            gradient.addColorStop(0, brickColor);
+                            gradient.addColorStop(1, darkenColor(brickColor, 20));
+                            ctx.fillStyle = gradient;
+                            ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                        }
+                        else if (effect.brickPattern === 'circles') {
+                            // رسم دوائر داخل الطوبة
+                            const circleSize = Math.min(brick.width, brick.height) * 0.2;
+                            const cols = Math.floor(brick.width / (circleSize * 2));
+                            const rows = Math.floor(brick.height / (circleSize * 2));
+                            
+                            for (let i = 0; i < cols; i++) {
+                                for (let j = 0; j < rows; j++) {
+                                    const cx = brick.x + circleSize + i * circleSize * 2;
+                                    const cy = brick.y + circleSize + j * circleSize * 2;
+                                    
+                                    ctx.beginPath();
+                                    ctx.arc(cx, cy, circleSize * 0.5, 0, Math.PI * 2);
+                                    ctx.fillStyle = darkenColor(brickColor, 20);
+                                    ctx.fill();
+                                }
+                            }
+                        }
+                        else if (effect.brickPattern === 'rainbow') {
+                            const hue = (c * 30 + r * 10 + level * 5) % 360;
+                            ctx.fillStyle = `hsl(${hue}, 80%, 60%)`;
+                            ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                        }
+                        else if (effect.brickPattern === 'random') {
+                            ctx.fillStyle = brickSettings.colors[Math.floor(Math.random() * brickSettings.colors.length)];
+                            ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                        }
+                        
+                        // تأثير توهج للطوب الخاصة
+                        if (brick.type !== 'normal') {
+                            const glow = ctx.createRadialGradient(
+                                brick.x + brick.width / 2, brick.y + brick.height / 2, 0,
+                                brick.x + brick.width / 2, brick.y + brick.height / 2, Math.max(brick.width, brick.height) / 2
+                            );
+                            
+                            if (brick.type === 'bonus') {
+                                glow.addColorStop(0, 'rgba(248, 187, 34, 0.5)');
+                                glow.addColorStop(1, 'rgba(248, 187, 34, 0)');
+                            } else if (brick.type === 'explosive') {
+                                glow.addColorStop(0, 'rgba(239, 71, 111, 0.5)');
+                                glow.addColorStop(1, 'rgba(239, 71, 111, 0)');
+                            } else if (brick.type === 'moving') {
+                                glow.addColorStop(0, 'rgba(114, 9, 183, 0.5)');
+                                glow.addColorStop(1, 'rgba(114, 9, 183, 0)');
+                            } else {
+                                glow.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+                                glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                            }
+                            
+                            ctx.fillStyle = glow;
+                            ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                        }
+                        
+                        // رسم تفاصيل إضافية للطوب الخاصة
+                        if (brick.type !== 'normal') {
+                            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                            ctx.font = `bold ${Math.min(brick.height * 0.6, 14)}px Tajawal`;
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            
+                            let symbol = '';
+                            if (brick.type === 'double') symbol = '2x';
+                            else if (brick.type === 'triple') symbol = '3x';
+                            else if (brick.type === 'solid') symbol = '5x';
+                            else if (brick.type === 'bonus') symbol = '★';
+                            else if (brick.type === 'explosive') symbol = '💥';
+                            else if (brick.type === 'moving') symbol = '⇄';
+                            
+                            ctx.fillText(symbol, brick.x + brick.width / 2, brick.y + brick.height / 2 + 10);
+                        }
+                        
+                        // رسم عدد الضربات المتبقية للطوب الصلب
+                        if (brick.hitsRequired > 1 && brick.type !== 'bonus') {
+                            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                            ctx.beginPath();
+                            ctx.arc(
+                                brick.x + brick.width - 10, 
+                                brick.y + 10, 
+                                8, 
+                                0, 
+                                Math.PI * 2 * (brick.hitsRequired - brick.hits) / brick.hitsRequired
+                            );
+                            ctx.lineTo(brick.x + brick.width - 10, brick.y + 10);
+                            ctx.fill();
+                            
+                            ctx.fillStyle = 'white';
+                            ctx.font = `bold ${Math.min(brick.height * 0.4, 10)}px Tajawal`;
+                            ctx.fillText(
+                                (brick.hitsRequired - brick.hits).toString(), 
+                                brick.x + brick.width - 10, 
+                                brick.y + 10
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        
+        // تفتيح اللون
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            
+            return '#' + (
+                0x1000000 + 
+                (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + 
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + 
+                (B < 255 ? B < 1 ? 0 : B : 255)
+            ).toString(16).slice(1);
+        }
+        
+        // تغميق اللون
+        function darkenColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) - amt;
+            const G = (num >> 8 & 0x00FF) - amt;
+            const B = (num & 0x0000FF) - amt;
+            
+            return '#' + (
+                0x1000000 + 
+                (R > 0 ? R : 0) * 0x10000 + 
+                (G > 0 ? G : 0) * 0x100 + 
+                (B > 0 ? B : 0)
+            ).toString(16).slice(1);
+        }
+        
+        // كشف التصادم بين الكرة والطوب
+        function collisionDetection() {
+            for (let c = 0; c < bricks.length; c++) {
+                for (let r = 0; r < bricks[c].length; r++) {
+                    const b = bricks[c][r];
+                    if (b.status === 1) {
+                        if (
+                            ball.x + ball.radius > b.x &&
+                            ball.x - ball.radius < b.x + b.width &&
+                            ball.y + ball.radius > b.y &&
+                            ball.y - ball.radius < b.y + b.height
+                        ) {
+                            // تحديد اتجاه الارتداد
+                            const ballCenterX = ball.x;
+                            const ballCenterY = ball.y;
+                            const brickCenterX = b.x + b.width / 2;
+                            const brickCenterY = b.y + b.height / 2;
+                            
+                            const dx = ballCenterX - brickCenterX;
+                            const dy = ballCenterY - brickCenterY;
+                            const width = b.width / 2;
+                            const height = b.height / 2;
+                            
+                            // تحديد الجانب الذي حدث فيه التصادم
+                            if (Math.abs(dx / width) > Math.abs(dy / height)) {
+                                // تصادم جانبي
+                                ball.dx = -ball.dx;
+                            } else {
+                                // تصادم علوي أو سفلي
+                                ball.dy = -ball.dy;
+                            }
+                            
+                            // زيادة عدد الضربات على الطوبة
+                            b.hits++;
+                            
+                            // تشغيل صوت الاصطدام
+                            try {
+                                brickHitSound.currentTime = 0;
+                                brickHitSound.play();
+                            } catch (e) {
+                                console.log("Couldn't play sound:", e);
+                            }
+                            
+                            // إذا كانت الطوبة من النوع المتفجر
+                            if (b.type === 'explosive') {
+                                createExplosion(b.x + b.width / 2, b.y + b.height / 2, b.width * 1.5);
+                                destroyNearbyBricks(b.x + b.width / 2, b.y + b.height / 2, b.width * 1.5);
+                                
+                                try {
+                                    explosionSound.currentTime = 0;
+                                    explosionSound.play();
+                                } catch (e) {
+                                    console.log("Couldn't play explosion sound:", e);
+                                }
+                            }
+                            
+                            // إذا وصلت الضربات إلى المطلوب
+                            if (b.hits >= b.hitsRequired) {
+                                b.status = 0;
+                                score += b.points;
+                                coins += Math.floor(b.points / 10); // إضافة عملات لكل نقاط
+                                scoreElement.textContent = score;
+                                coinsAmountElement.textContent = coins;
+                                
+                                // إذا كانت طوبة مكافأة
+                                if (b.type === 'bonus') {
+                                    powerUps++;
+                                    powerUpsElement.textContent = powerUps;
+                                    createParticles(b.x + b.width / 2, b.y + b.height / 2, 15, '#f8bb22');
+                                } else {
+                                    createParticles(b.x + b.width / 2, b.y + b.height / 2, 5, b.color);
+                                }
+                            } else {
+                                // تأثير اهتزاز للطوبة
+                                createParticles(b.x + b.width / 2, b.y + b.height / 2, 2, b.color);
+                            }
+                            
+                            // تحديث شريط التقدم
+                            updateProgressBar();
+                            
+                            // تحقق إذا تم تدمير جميع الطوب
+                            if (checkWin()) {
+                                levelComplete();
+                            }
+                            
+                            // خروج بعد أول تصادم لتجنب أخطاء متعددة
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // تدمير الطوب القريبة من الانفجار
+        function destroyNearbyBricks(x, y, radius) {
+            for (let c = 0; c < bricks.length; c++) {
+                for (let r = 0; r < bricks[c].length; r++) {
+                    const b = bricks[c][r];
+                    if (b.status === 1) {
+                        const brickCenterX = b.x + b.width / 2;
+                        const brickCenterY = b.y + b.height / 2;
+                        const distance = Math.sqrt(Math.pow(brickCenterX - x, 2) + Math.pow(brickCenterY - y, 2));
+                        
+                        if (distance < radius) {
+                            b.status = 0;
+                            score += b.points;
+                            coins += Math.floor(b.points / 10); // إضافة عملات لكل نقاط
+                            scoreElement.textContent = score;
+                            coinsAmountElement.textContent = coins;
+                            createParticles(b.x + b.width / 2, b.y + b.height / 2, 3, b.color);
+                            
+                            try {
+                                brickHitSound.currentTime = 0;
+                                brickHitSound.play();
+                            } catch (e) {
+                                console.log("Couldn't play sound:", e);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // تحديث شريط التقدم
+            updateProgressBar();
+            
+            // تحقق إذا تم تدمير جميع الطوب
+            if (checkWin()) {
+                levelComplete();
+            }
+        }
+        
+        // إنشاء تأثير انفجار
+        function createExplosion(x, y, size) {
+            for (let i = 0; i < 30; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 2;
+                const radius = Math.random() * 4 + 2;
+                
+                particles.push({
+                    x: x,
+                    y: y,
+                    radius: radius,
+                    color: `hsl(${Math.random() * 60 + 10}, 100%, 50%)`,
+                    dx: Math.cos(angle) * speed,
+                    dy: Math.sin(angle) * speed,
+                    life: 30 + Math.random() * 20,
+                    alpha: 1
+                });
+            }
+            
+            // تأثير ضوئي
+            const explosionLight = document.createElement('div');
+            explosionLight.className = 'particle';
+            explosionLight.style.width = `${size}px`;
+            explosionLight.style.height = `${size}px`;
+            explosionLight.style.left = `${x - size/2}px`;
+            explosionLight.style.top = `${y - size/2}px`;
+            explosionLight.style.background = 'radial-gradient(circle, rgba(255,100,100,0.8) 0%, rgba(255,200,100,0.4) 50%, transparent 100%)';
+            explosionLight.style.borderRadius = '50%';
+            explosionLight.style.transform = 'scale(0)';
+            explosionLight.style.transition = 'transform 0.3s ease-out, opacity 0.5s ease-out';
+            
+            document.getElementById('game-container').appendChild(explosionLight);
+            
+            setTimeout(() => {
+                explosionLight.style.transform = 'scale(1)';
+                explosionLight.style.opacity = '0';
+            }, 10);
+            
+            setTimeout(() => {
+                explosionLight.remove();
+            }, 500);
+        }
+        
+        // إنشاء جسيمات تأثيرية
+        function createParticles(x, y, count, color) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 3 + 1;
+                const radius = Math.random() * 3 + 1;
+                
+                particles.push({
+                    x: x,
+                    y: y,
+                    radius: radius,
+                    color: color,
+                    dx: Math.cos(angle) * speed,
+                    dy: Math.sin(angle) * speed,
+                    life: 20 + Math.random() * 10,
+                    alpha: 1
+                });
+            }
+        }
+        
+        // رسم الجسيمات
+        function drawParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color.replace(')', `, ${p.alpha})`).replace('rgb', 'rgba');
+                ctx.fill();
+                
+                p.x += p.dx * gameSpeed;
+                p.y += p.dy * gameSpeed;
+                p.life--;
+                p.alpha = p.life / 30;
+                
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+        
+        // التحقق من الفوز بالمستوى
+        function checkWin() {
+            for (let c = 0; c < bricks.length; c++) {
+                for (let r = 0; r < bricks[c].length; r++) {
+                    if (bricks[c][r].status === 1) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        
+        // تحديث شريط التقدم
+        function updateProgressBar() {
+            let totalBricks = 0;
+            let destroyedBricks = 0;
+            
+            for (let c = 0; c < bricks.length; c++) {
+                for (let r = 0; r < bricks[c].length; r++) {
+                    if (bricks[c][r].status === 1) {
+                        totalBricks++;
+                    } else {
+                        destroyedBricks++;
+                    }
+                }
+            }
+            
+            if (totalBricks === 0) {
+                progressBar.style.width = '100%';
+            } else {
+                const progress = (destroyedBricks / (totalBricks + destroyedBricks)) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+        }
+        
+        // اكتمال المستوى
+        function levelComplete() {
+            gameRunning = false;
+            
+            // مكافأة اكتمال المستوى
+            const levelBonus = level * 100;
+            score += levelBonus;
+            coins += Math.floor(levelBonus / 5); // مكافأة عملات إضافية
+            scoreElement.textContent = score;
+            coinsAmountElement.textContent = coins;
+            
+            // فتح المستوى التالي
+            unlockedLevels[level + 1] = true;
+            localStorage.setItem('brickBreakerUnlockedLevels', JSON.stringify(unlockedLevels));
+            
+            // عرض شاشة المستوى التالي
+            completedLevelElement.textContent = level;
+            levelRewardElement.textContent = `+${levelBonus} نقطة مكافأة`;
+            levelUpScreen.classList.add('active');
+            
+            // تشغيل تأثير الكونفيتي
+            createConfetti();
+            
+            // تشغيل صوت اكتمال المستوى
+            try {
+                levelCompleteSound.currentTime = 0;
+                levelCompleteSound.play();
+            } catch (e) {
+                console.log("Couldn't play level complete sound:", e);
+            }
+            
+            // تحديث أعلى نتيجة
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('brickBreakerHighScore', highScore);
+                highScoreElement.textContent = highScore;
+            }
+            
+            // حفظ العملات
+            localStorage.setItem('brickBreakerCoins', coins);
+            
+            // تحديث شاشة المستويات
+            updateLevelsScreen();
+        }
+        
+        // الانتقال للمستوى التالي
+        function nextLevel() {
+            level++;
+            
+            // إذا كان المستوى 31، نهاية اللعبة
+            if (level > 30) {
+                gameOver(true);
+                return;
+            }
+            
+            levelElement.textContent = level;
+            levelUpScreen.classList.remove('active');
+            
+            // تطبيق تأثيرات المستوى
+            applyLevelEffects();
+            
+            // إعادة تعيين الكرة والمضرب
+            initBallAndPaddle();
+            
+            // إنشاء الطوب الجديد
+            createBricks();
+            
+            // بدء اللعبة
+            gameRunning = true;
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // تطبيق تأثيرات المستوى
+        function applyLevelEffects() {
+            const effect = levelEffects[level-1] || {};
+            
+            // تغيير لون الخلفية
+            if (effect.background) {
+                canvas.style.background = effect.background;
+            }
+            
+            // تغيير لون الكرة
+            if (effect.ballColor) {
+                ball.color = effect.ballColor;
+            }
+            
+            // تأثيرات بصرية إضافية
+            levelEffect.innerHTML = '';
+            levelEffect.style.opacity = '0';
+            
+            if (level % 5 === 0) {
+                // تأثير خاص كل 5 مستويات
+                const specialEffect = document.createElement('div');
+                specialEffect.style.position = 'absolute';
+                specialEffect.style.top = '0';
+                specialEffect.style.left = '0';
+                specialEffect.style.width = '100%';
+                specialEffect.style.height = '100%';
+                specialEffect.style.background = 'radial-gradient(circle, transparent 10%, rgba(255,255,255,0.1) 20%, transparent 30%)';
+                specialEffect.style.backgroundSize = '200% 200%';
+                specialEffect.style.animation = 'pulse 5s infinite alternate';
+                levelEffect.appendChild(specialEffect);
+                levelEffect.style.opacity = '1';
+            }
+        }
+        
+        // إنشاء تأثير الكونفيتي
+        function createConfetti() {
+            confettiParticles = [];
+            const colors = ['#f8bb22', '#e94560', '#4ecdc4', '#06d6a0', '#118ab2', '#7209b7'];
+            
+            for (let i = 0; i < 100; i++) {
+                confettiParticles.push({
+                    x: Math.random() * canvas.width,
+                    y: -10,
+                    width: Math.random() * 10 + 5,
+                    height: Math.random() * 10 + 5,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 3 + 2,
+                    angle: Math.random() * Math.PI * 2,
+                    rotation: Math.random() * Math.PI * 2,
+                    rotationSpeed: (Math.random() - 0.5) * 0.2
+                });
+            }
+        }
+        
+        // رسم الكونفيتي
+        function drawConfetti() {
+            for (let i = confettiParticles.length - 1; i >= 0; i--) {
+                const p = confettiParticles[i];
+                
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation);
+                
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.width/2, -p.height/2, p.width, p.height);
+                
+                ctx.restore();
+                
+                p.y += p.speed * gameSpeed;
+                p.x += Math.sin(p.angle) * 1 * gameSpeed;
+                p.rotation += p.rotationSpeed * gameSpeed;
+                
+                if (p.y > canvas.height) {
+                    confettiParticles.splice(i, 1);
+                }
+            }
+        }
+        
+        // تحديث وضع الكرة
+        function updateBall() {
+            // الحركة
+            ball.x += ball.dx * gameSpeed;
+            ball.y += ball.dy * gameSpeed;
+            
+            // كشف التصادم مع الجدران
+            if (ball.x + ball.dx > canvas.width - ball.radius || ball.x + ball.dx < ball.radius) {
+                ball.dx = -ball.dx;
+                createParticles(
+                    ball.x < ball.radius ? ball.radius : canvas.width - ball.radius, 
+                    ball.y, 
+                    3, 
+                    ball.color
+                );
+                
+                try {
+                    brickHitSound.currentTime = 0;
+                    brickHitSound.play();
+                } catch (e) {
+                    console.log("Couldn't play sound:", e);
+                }
+            }
+            
+            if (ball.y + ball.dy < ball.radius) {
+                ball.dy = -ball.dy;
+                createParticles(ball.x, ball.radius, 3, ball.color);
+                
+                try {
+                    brickHitSound.currentTime = 0;
+                    brickHitSound.play();
+                } catch (e) {
+                    console.log("Couldn't play sound:", e);
+                }
+            } else if (ball.y + ball.dy > canvas.height - ball.radius) {
+                // كشف التصادم مع المضرب
+                if (ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
+                    // حساب زاوية الارتداد بناءً على مكان الاصطدام بالمضرب
+                    const hitPosition = (ball.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
+                    const angle = hitPosition * Math.PI / 3; // أقصى زاوية 60 درجة
+                    
+                    const speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
+                    ball.dx = speed * Math.sin(angle);
+                    ball.dy = -speed * Math.cos(angle);
+                    
+                    // تأثير عند الاصطدام بالمضرب
+                    createParticles(ball.x, paddle.y - ball.radius, 5, paddle.color);
+                    
+                    try {
+                        paddleHitSound.currentTime = 0;
+                        paddleHitSound.play();
+                    } catch (e) {
+                        console.log("Couldn't play paddle sound:", e);
+                    }
+                } else {
+                    // فقدان حياة
+                    lives--;
+                    livesElement.textContent = lives;
+                    
+                    if (lives <= 0) {
+                        gameOver();
+                    } else {
+                        // إعادة تعيين الكرة والمضرب
+                        resetBallAndPaddle();
+                        
+                        // تأثير فقدان الحياة
+                        createParticles(ball.x, ball.y, 10, '#ff0000');
+                        
+                        // تجميد اللعبة لمدة قصيرة
+                        gameRunning = false;
+                        setTimeout(() => {
+                            gameRunning = true;
+                            requestAnimationFrame(gameLoop);
+                        }, 1000);
+                    }
+                }
+            }
+        }
+        
+        // تحديث وضع المضرب
+        function updatePaddle() {
+            if (paddle.isMovingLeft && paddle.x > 0) {
+                paddle.x -= paddle.speed * gameSpeed;
+            } else if (paddle.isMovingRight && paddle.x < canvas.width - paddle.width) {
+                paddle.x += paddle.speed * gameSpeed;
+            }
+        }
+        
+        // انتهاء اللعبة
+        function gameOver(isVictory = false) {
+            gameRunning = false;
+            
+            if (isVictory) {
+                finalScoreElement.textContent = `تهانينا! لقد أكملت جميع المستويات!`;
+            } else {
+                finalScoreElement.textContent = `النقاط النهائية: ${score}`;
+            }
+            
+            highScoreFinalElement.textContent = `أعلى نتيجة: ${highScore}`;
+            gameOverScreen.classList.add('active');
+            
+            // تشغيل تأثير الكونفيتي
+            createConfetti();
+            
+            // تشغيل صوت نهاية اللعبة
+            try {
+                gameOverSound.currentTime = 0;
+                gameOverSound.play();
+            } catch (e) {
+                console.log("Couldn't play game over sound:", e);
+            }
+            
+            // حفظ العملات
+            localStorage.setItem('brickBreakerCoins', coins);
+        }
+        
+        // العودة للقائمة الرئيسية
+        function backToMenu() {
+            gameRunning = false;
+            gameOverScreen.classList.remove('active');
+            levelUpScreen.classList.remove('active');
+            howToPlayScreen.classList.remove('active');
+            levelsScreen.classList.remove('active');
+            shopScreen.classList.remove('active');
+            startScreen.classList.add('active');
+            
+            // إعادة تعيين اللعبة
+            score = 0;
+            lives = 3;
+            level = 1;
+            powerUps = 0;
+            
+            scoreElement.textContent = score;
+            livesElement.textContent = lives;
+            powerUpsElement.textContent = powerUps;
+            levelElement.textContent = level;
+            
+            // إعادة تعيين الكرة والمضرب
+            initBallAndPaddle();
+            
+            // إنشاء الطوب الجديد
+            createBricks();
+            
+            // إعادة تعيين شريط التقدم
+            progressBar.style.width = '0%';
+            
+            // تطبيق تأثيرات المستوى الأول
+            applyLevelEffects();
+            
+            // حفظ العملات
+            localStorage.setItem('brickBreakerCoins', coins);
+        }
+        
+        // كيفية اللعب
+        function showHowToPlay() {
+            startScreen.classList.remove('active');
+            howToPlayScreen.classList.add('active');
+        }
+        
+        // عرض شاشة المستويات
+        function showLevelsScreen() {
+            startScreen.classList.remove('active');
+            levelsScreen.classList.add('active');
+            updateLevelsScreen();
+        }
+        
+        // تحديث شاشة المستويات
+        function updateLevelsScreen() {
+            levelsContainer.innerHTML = '';
+            
+            for (let i = 1; i <= 30; i++) {
+                const levelCard = document.createElement('div');
+                levelCard.className = `level-card ${unlockedLevels[i] ? '' : 'locked'}`;
+                levelCard.innerHTML = `
+                    <div class="level-number">${i}</div>
+                    <div class="level-stars">
+                        <i class="fas fa-star ${i <= 5 ? '' : 'empty'}"></i>
+                        <i class="fas fa-star ${i <= 10 ? '' : 'empty'}"></i>
+                        <i class="fas fa-star ${i <= 15 ? '' : 'empty'}"></i>
+                    </div>
+                `;
+                
+                if (unlockedLevels[i]) {
+                    levelCard.addEventListener('click', () => {
+                        startLevel(i);
+                    });
+                }
+                
+                levelsContainer.appendChild(levelCard);
+            }
+        }
+        
+        // بدء مستوى معين
+        function startLevel(selectedLevel) {
+            level = selectedLevel;
+            score = 0;
+            lives = 3;
+            powerUps = 0;
+            
+            scoreElement.textContent = score;
+            livesElement.textContent = lives;
+            powerUpsElement.textContent = powerUps;
+            levelElement.textContent = level;
+            
+            // إعادة تعيين الكرة والمضرب
+            initBallAndPaddle();
+            
+            // إنشاء الطوب الجديد
+            createBricks();
+            
+            // إعادة تعيين شريط التقدم
+            progressBar.style.width = '0%';
+            
+            // تطبيق تأثيرات المستوى
+            applyLevelEffects();
+            
+            levelsScreen.classList.remove('active');
+            gameRunning = true;
+            lastTime = 0;
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // عرض متجر الكرات
+        function showShopScreen() {
+            startScreen.classList.remove('active');
+            shopScreen.classList.add('active');
+            updateShopScreen();
+        }
+        
+        // تحديث متجر الكرات
+        function updateShopScreen() {
+            shopContainer.innerHTML = '';
+            coinsAmountElement.textContent = coins;
+            
+            for (const [id, ball] of Object.entries(ballTypes)) {
+                const shopItem = document.createElement('div');
+                shopItem.className = `shop-item ${unlockedBalls[id] ? (selectedBall === id ? 'selected' : '') : 'locked'}`;
+                shopItem.innerHTML = `
+                    <div class="ball-preview" style="background: ${ball.color};"></div>
+                    <div class="item-name">${ball.name}</div>
+                    ${unlockedBalls[id] ? '' : `<div class="item-price">${ball.price} <i class="fas fa-coins"></i></div>`}
+                `;
+                
+                if (unlockedBalls[id]) {
+                    shopItem.addEventListener('click', () => {
+                        // إلغاء تحديد الكرة المحددة سابقًا
+                        const prevSelected = document.querySelector('.shop-item.selected');
+                        if (prevSelected) prevSelected.classList.remove('selected');
+                        
+                        // تحديد الكرة الجديدة
+                        shopItem.classList.add('selected');
+                        selectedBall = id;
+                        localStorage.setItem('brickBreakerSelectedBall', selectedBall);
+                        
+                        // تحديث الكرة في اللعبة
+                        if (gameRunning) {
+                            ball.pattern = ballTypes[selectedBall].pattern;
+                        }
+                    });
+                } else {
+                    shopItem.addEventListener('click', () => {
+                        if (coins >= ball.price) {
+                            coins -= ball.price;
+                            unlockedBalls[id] = true;
+                            localStorage.setItem('brickBreakerUnlockedBalls', JSON.stringify(unlockedBalls));
+                            localStorage.setItem('brickBreakerCoins', coins);
+                            updateShopScreen();
+                        } else {
+                            // تأثير اهتزاز عند عدم وجود عملات كافية
+                            shopItem.style.animation = 'shake 0.5s';
+                            setTimeout(() => {
+                                shopItem.style.animation = '';
+                            }, 500);
+                        }
+                    });
+                }
+                
+                shopContainer.appendChild(shopItem);
+            }
+            
+            // تحديد الكرة المختارة
+            const selectedItem = document.querySelector(`.shop-item:not(.locked)`);
+            if (selectedItem) selectedItem.classList.add('selected');
+        }
+        
+        // حلقة اللعبة الرئيسية
+        function gameLoop(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            // ضبط سرعة اللعبة بناءً على معدل الإطارات
+            gameSpeed = Math.min(deltaTime / (1000/60), 2); // الحد الأقصى لسرعة اللعبة
+            
+            // مسح اللوحة
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // رسم المكونات
+            drawBricks();
+            drawPaddle();
+            drawBall();
+            drawParticles();
+            drawConfetti();
+            
+            // كشف التصادم
+            collisionDetection();
+            
+            // تحديث المواضع
+            updateBall();
+            updatePaddle();
+            
+            // استمرار اللعبة إذا كانت تعمل
+            if (gameRunning) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+        
+        // بدء اللعبة
+        function startGame() {
+            score = 0;
+            lives = 3;
+            level = 1;
+            powerUps = 0;
+            
+            scoreElement.textContent = score;
+            livesElement.textContent = lives;
+            powerUpsElement.textContent = powerUps;
+            levelElement.textContent = level;
+            
+            // إعادة تعيين الكرة والمضرب
+            initBallAndPaddle();
+            
+            // إنشاء الطوب الجديد
+            createBricks();
+            
+            // إعادة تعيين شريط التقدم
+            progressBar.style.width = '0%';
+            
+            // تطبيق تأثيرات المستوى الأول
+            applyLevelEffects();
+            
+            startScreen.classList.remove('active');
+            gameOverScreen.classList.remove('active');
+            gameRunning = true;
+            lastTime = 0;
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // أحداث لوحة المفاتيح
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Right' || e.key === 'd' || e.key === 'D') {
+                paddle.isMovingRight = true;
+            } else if (e.key === 'ArrowLeft' || e.key === 'Left' || e.key === 'a' || e.key === 'A') {
+                paddle.isMovingLeft = true;
+            } else if (e.key === ' ' && !gameRunning && !startScreen.classList.contains('active')) {
+                if (levelUpScreen.classList.contains('active')) {
+                    nextLevel();
+                } else {
+                    startGame();
+                }
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Right' || e.key === 'd' || e.key === 'D') {
+                paddle.isMovingRight = false;
+            } else if (e.key === 'ArrowLeft' || e.key === 'Left' || e.key === 'a' || e.key === 'A') {
+                paddle.isMovingLeft = false;
+            }
+        });
+        
+        // أحداث الفأرة/اللمس
+        canvas.addEventListener('mousemove', (e) => {
+            if (!gameRunning) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const relativeX = e.clientX - rect.left;
+            
+            if (relativeX > paddle.width / 2 && relativeX < canvas.width - paddle.width / 2) {
+                paddle.x = relativeX - paddle.width / 2;
+            }
+        });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            if (!gameRunning) return;
+            e.preventDefault();
+            
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const relativeX = touch.clientX - rect.left;
+            
+            if (relativeX > paddle.width / 2 && relativeX < canvas.width - paddle.width / 2) {
+                paddle.x = relativeX - paddle.width / 2;
+            }
+        }, { passive: false });
+        
+        // أحداث الأزرار الافتراضية
+        leftBtn.addEventListener('mousedown', () => paddle.isMovingLeft = true);
+        leftBtn.addEventListener('mouseup', () => paddle.isMovingLeft = false);
+        leftBtn.addEventListener('mouseleave', () => paddle.isMovingLeft = false);
+        leftBtn.addEventListener('touchstart', () => paddle.isMovingLeft = true);
+        leftBtn.addEventListener('touchend', () => paddle.isMovingLeft = false);
+        
+        rightBtn.addEventListener('mousedown', () => paddle.isMovingRight = true);
+        rightBtn.addEventListener('mouseup', () => paddle.isMovingRight = false);
+        rightBtn.addEventListener('mouseleave', () => paddle.isMovingRight = false);
+        rightBtn.addEventListener('touchstart', () => paddle.isMovingRight = true);
+        rightBtn.addEventListener('touchend', () => paddle.isMovingRight = false);
+        
+        // أحداث أزرار الواجهة
+        startButton.addEventListener('click', startGame);
+        levelsButton.addEventListener('click', showLevelsScreen);
+        shopButton.addEventListener('click', showShopScreen);
+        howToPlayButton.addEventListener('click', showHowToPlay);
+        backButton.addEventListener('click', backToMenu);
+        restartButton.addEventListener('click', startGame);
+        menuButton.addEventListener('click', backToMenu);
+        nextLevelButton.addEventListener('click', nextLevel);
+        backToMenuButton.addEventListener('click', backToMenu);
+        backToMenuButtonShop.addEventListener('click', backToMenu);
+        
+        // تهيئة اللعبة عند التحميل
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            initBallAndPaddle();
+            createBricks();
+            highScoreElement.textContent = highScore;
+            coinsAmountElement.textContent = coins;
+            updateLevelsScreen();
+            updateShopScreen();
+            
+            // تطبيق تأثيرات المستوى الأول
+            applyLevelEffects();
+            
+            // كشف الجهاز المحمول
+            if (isMobile) {
+                document.querySelector('.controls').style.display = 'flex';
+            }
+        });
+        
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+    </script>
+</body>
+</html>            </div>
             <div class="control-btn" id="right-btn">
                 <i class="fas fa-arrow-right"></i>
             </div>
