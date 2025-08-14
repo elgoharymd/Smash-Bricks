@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>لعبة الكرة القافزة الفضائية</title>
+    <title>Barrier Blitz</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
         
@@ -34,6 +34,2365 @@
             height: 100%;
             max-height: 650px;
             background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 255, 255, 0.3);
+            overflow: hidden;
+            margin: 20px;
+            aspect-ratio: 380/650;
+            border: 1px solid #00ffff;
+        }
+        
+        #game-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        #start-screen, #game-over-screen, #shop-screen, #levels-screen, #background-select-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 10;
+            text-align: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+        }
+        
+        #game-over-screen, #shop-screen, #levels-screen, #background-select-screen {
+            display: none;
+        }
+        
+        .game-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            border: 3px solid #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            object-fit: cover;
+            animation: pulse 2s infinite alternate;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin: 15px 0;
+            color: #00ffaa;
+            text-shadow: 0 0 5px #00ffaa;
+        }
+        
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #EEE;
+            line-height: 1.5;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #00aaff, #0088ff);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 170, 255, 0.5);
+            font-weight: bold;
+            margin: 8px 0;
+            width: 80%;
+            max-width: 250px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                transparent 45%,
+                rgba(0, 255, 255, 0.5) 50%,
+                transparent 55%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.8);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #aa00ff, #8800ff);
+        }
+        
+        .btn-shop {
+            background: linear-gradient(45deg, #00ffaa, #00cc88);
+        }
+        
+        .btn-settings {
+            background: linear-gradient(45deg, #ff00aa, #cc0088);
+        }
+        
+        .btn-premium {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        #score-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            z-index: 5;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        #high-score-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.2rem;
+            color: #00ffff;
+            z-index: 5;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        #coins-display {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            font-size: 1.2rem;
+            color: #ffcc00;
+            z-index: 5;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #ffcc00;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+        
+        #level-display {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            font-size: 1.2rem;
+            color: #00ffaa;
+            z-index: 5;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #00ffaa;
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        #final-score, #new-high-score {
+            font-size: 1.5rem;
+            margin: 10px 0;
+            color: #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+        }
+        
+        #new-high-score {
+            display: none;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            width: 80%;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #AAA;
+        }
+        
+        /* تصميم المتجر */
+        .shop-items {
+            width: 100%;
+            max-height: 60%;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 0 10px;
+        }
+        
+        .shop-item {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shop-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                transparent 45%,
+                rgba(0, 255, 255, 0.1) 50%,
+                transparent 55%
+            );
+            animation: shine 3s infinite;
+        }
+        
+        .shop-item:hover {
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+        
+        .ball-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-left: 15px;
+            box-shadow: 0 0 15px currentColor;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .ball-preview::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 20%;
+            height: 20%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            filter: blur(1px);
+        }
+        
+        .item-info {
+            flex: 1;
+            text-align: right;
+        }
+        
+        .item-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: white;
+            text-shadow: 0 0 5px currentColor;
+        }
+        
+        .item-price {
+            color: #ffcc00;
+            font-size: 0.9rem;
+            text-shadow: 0 0 5px #ffcc00;
+        }
+        
+        .item-description {
+            color: #AAA;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        
+        .buy-btn {
+            background: linear-gradient(45deg, #00ffaa, #00cc88);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        .buy-btn:disabled {
+            background: #333;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .owned-badge {
+            background: linear-gradient(45deg, #00ffaa, #00cc88);
+            color: black;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        .premium-badge {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: black;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* تصميم المراحل */
+        .levels-container {
+            width: 100%;
+            max-height: 60%;
+            overflow-y: auto;
+            margin: 15px 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 0 10px;
+        }
+        
+        .level-card {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                transparent 45%,
+                rgba(0, 255, 255, 0.1) 50%,
+                transparent 55%
+            );
+            animation: shine 3s infinite;
+        }
+        
+        .level-card.locked {
+            filter: grayscale(80%);
+            opacity: 0.7;
+        }
+        
+        .level-card.unlocked:hover {
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+        
+        .level-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+        }
+        
+        .level-difficulty {
+            font-size: 0.8rem;
+            color: #AAA;
+            margin: 5px 0;
+        }
+        
+        .level-requirements {
+            font-size: 0.7rem;
+            color: #ffcc00;
+            margin-top: 5px;
+            text-shadow: 0 0 3px #ffcc00;
+        }
+        
+        .lock-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* تأثيرات الجاذبية للكرة */
+        .gravity-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 255, 255, 0.5);
+        }
+        
+        /* خلفيات اللعبة */
+        .background-options {
+            width: 100%;
+            max-height: 60%;
+            overflow-y: auto;
+            margin: 15px 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 0 10px;
+        }
+        
+        .background-option {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            aspect-ratio: 1/1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .background-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                transparent 45%,
+                rgba(0, 255, 255, 0.1) 50%,
+                transparent 55%
+            );
+            animation: shine 3s infinite;
+        }
+        
+        .background-option:hover {
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+        
+        .background-preview {
+            width: 80%;
+            height: 80%;
+            border-radius: 10px;
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 5px;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+        }
+        
+        .background-name {
+            font-size: 0.9rem;
+            color: white;
+            margin-top: 5px;
+        }
+        
+        /* تأثيرات الكرة الاحترافية */
+        .ball-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            filter: blur(10px);
+            opacity: 0.7;
+            z-index: -1;
+        }
+        
+        /* تأثيرات العقبات الشفافة */
+        .obstacle-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            filter: blur(5px);
+            opacity: 0.8;
+            z-index: -1;
+        }
+        
+        /* تأثيرات الحركة */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* تأثيرات التوهج */
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px #00ffff; }
+            50% { box-shadow: 0 0 20px #00ffff; }
+            100% { box-shadow: 0 0 5px #00ffff; }
+        }
+        
+        /* زر رفع الخلفية */
+        #upload-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        #upload-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        /* تصميم متجاوب */
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .game-logo {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+            
+            #score-display, #high-score-display {
+                font-size: 1.2rem;
+                padding: 5px 10px;
+            }
+            
+            #coins-display, #level-display {
+                font-size: 1rem;
+                padding: 5px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="score-display">النقاط: 0</div>
+        <div id="high-score-display">أعلى نتيجة: 0</div>
+        <div id="coins-display">العملات: 0</div>
+        <div id="level-display">المرحلة: 1</div>
+        
+        <canvas id="game-canvas"></canvas>
+        
+        <button id="upload-btn">رفع خلفية</button>
+        <input type="file" id="file-input" accept="image/*,video/*">
+        
+        <div id="start-screen">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgTeQanJ58k8K8Rdx0xbACKt9G0sKnhAbFkAKeHYccvvm8xwhckiLTBTa6dD_sR7QK-uzdDbw4rP3jB3uDHPHjWM8ZN5h-IL7q85eGfLmQ2CV0vuOMI2conWcvUVPOstcpIA4N4t720FV310JNHXSFQmif5GMmt2GbfKo4Io53_aKgpjSImTb76lY36nyuw/s1280/IMG-20250814-WA0003.jpg" class="game-logo" alt="Barrier Blitz Logo">
+            <h1 class="floating">Barrier Blitz</h1>
+            <p>أصعب تحدي هل أنت جاهز!! 💀</p>
+            <button class="btn" id="start-btn">ابدأ اللعب</button>
+            <button class="btn btn-secondary" id="levels-btn">المراحل</button>
+            <button class="btn btn-shop" id="shop-btn">متجر الكرات</button>
+            <button class="btn btn-settings" id="background-btn">خلفيات اللعبة</button>
+
+            <div class="instructions">
+                اضغط للقفز | تجنب العقبات | اجمع العملات
+            </div>
+        </div>
+        
+        <div id="game-over-screen">
+            <h1>انتهت اللعبة!</h1>
+            <div id="final-score">النقاط: 0</div>
+            <div id="new-high-score">!تحقيق أعلى نتيجة جديدة</div>
+            <button class="btn" id="restart-btn">إعادة المحاولة</button>
+            <button class="btn btn-secondary" id="back-to-menu-btn">العودة للقائمة</button>
+            <div class="instructions">
+                لقد كسبت <span id="earned-coins">0</span> عملة فضائية!
+            </div>
+        </div>
+        
+        <div id="shop-screen">
+            <h1>متجر الكرات</h1>
+            <p>اختر كرتك الفضائية المفضلة بخصائص مختلفة!</p>
+            
+            <div class="shop-items">
+                <!-- سيتم ملؤها بالجافاسكريبت -->
+            </div>
+            
+            <button class="btn" id="back-from-shop-btn">العودة</button>
+        </div>
+        
+        <div id="levels-screen">
+            <h1>مراحل اللعبة</h1>
+            <p>تحدى نفسك في مراحل متدرجة الصعوبة!</p>
+            
+            <div class="levels-container">
+                <!-- سيتم ملؤها بالجافاسكريبت -->
+            </div>
+            
+            <button class="btn" id="back-from-levels-btn">العودة</button>
+        </div>
+        
+        <div id="background-select-screen">
+            <h1>خلفيات اللعبة</h1>
+            <p>اختر الخلفية الفضائية التي تفضلها!</p>
+            
+            <div class="background-options">
+                <!-- سيتم ملؤها بالجافاسكريبت -->
+            </div>
+            
+            <button class="btn" id="back-from-background-btn">العودة</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // عناصر DOM
+            const canvas = document.getElementById('game-canvas');
+            const ctx = canvas.getContext('2d');
+            const startScreen = document.getElementById('start-screen');
+            const gameOverScreen = document.getElementById('game-over-screen');
+            const shopScreen = document.getElementById('shop-screen');
+            const levelsScreen = document.getElementById('levels-screen');
+            const backgroundScreen = document.getElementById('background-select-screen');
+            const startBtn = document.getElementById('start-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const backToMenuBtn = document.getElementById('back-to-menu-btn');
+            const shopBtn = document.getElementById('shop-btn');
+            const backFromShopBtn = document.getElementById('back-from-shop-btn');
+            const levelsBtn = document.getElementById('levels-btn');
+            const backFromLevelsBtn = document.getElementById('back-from-levels-btn');
+            const backgroundBtn = document.getElementById('background-btn');
+            const backFromBackgroundBtn = document.getElementById('back-from-background-btn');
+            const premiumBtn = document.getElementById('premium-btn');
+            const scoreDisplay = document.getElementById('score-display');
+            const highScoreDisplay = document.getElementById('high-score-display');
+            const coinsDisplay = document.getElementById('coins-display');
+            const levelDisplay = document.getElementById('level-display');
+            const finalScoreDisplay = document.getElementById('final-score');
+            const newHighScoreDisplay = document.getElementById('new-high-score');
+            const earnedCoinsDisplay = document.getElementById('earned-coins');
+            const shopItemsContainer = document.querySelector('.shop-items');
+            const levelsContainer = document.querySelector('.levels-container');
+            const backgroundOptionsContainer = document.querySelector('.background-options');
+            const uploadBtn = document.getElementById('upload-btn');
+            const fileInput = document.getElementById('file-input');
+            
+            // تعيين حجم canvas ديناميكيًا
+            function resizeCanvas() {
+                const container = document.getElementById('game-container');
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+            }
+            
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            
+            // متغيرات اللعبة
+            let gameRunning = false;
+            let score = 0;
+            let coins = parseInt(localStorage.getItem('coins')) || 0;
+            let highScore = parseInt(localStorage.getItem('highScore')) || 0;
+            let currentLevel = parseInt(localStorage.getItem('currentLevel')) || 1;
+            let unlockedLevels = JSON.parse(localStorage.getItem('unlockedLevels')) || [1];
+            let animationId;
+            let gravity = 0.5;
+            let speed = 3;
+            let obstacleFrequency = 120; // إطار لكل عقبة جديدة
+            let frameCount = 0;
+            let obstacles = [];
+            let particles = [];
+            let selectedBallType = localStorage.getItem('selectedBall') || 'default';
+            let ownedBalls = JSON.parse(localStorage.getItem('ownedBalls')) || ['default'];
+            let currentBackground = localStorage.getItem('gameBackground') || 'default';
+            let customBackground = localStorage.getItem('customBackground') || null;
+            let backgroundImage = null;
+            let backgroundVideo = null;
+            let videoElement = null;
+            let isPremium = localStorage.getItem('isPremium') === 'true';
+            
+            // أنواع الكرات المتاحة للشراء
+            const ballTypes = {
+                'default': {
+                    name: 'الكرة الفضائية',
+                    price: 0,
+                    color: '#00ffff',
+                    radius: 20,
+                    jumpForce: -12,
+                    description: 'الكرة الافتراضية بدون مميزات خاصة',
+                    owned: true,
+                    glowColor: 'rgba(0, 255, 255, 0.5)',
+                    premium: false
+                },
+                'golden': {
+                    name: 'الكرة الذهبية',
+                    price: 500,
+                    color: '#FFD700',
+                    radius: 22,
+                    jumpForce: -11.5,
+                    description: 'تجمع نقاط إضافية وتحصل على عملات أكثر!',
+                    owned: ownedBalls.includes('golden'),
+                    glowColor: 'rgba(255, 215, 0, 0.5)',
+                    premium: false
+                },
+                'bouncy': {
+                    name: 'الكرة المرتدة',
+                    price: 300,
+                    color: '#00ffaa',
+                    radius: 18,
+                    jumpForce: -14,
+                    description: 'قفزة أعلى مع جاذبية أقل!',
+                    owned: ownedBalls.includes('bouncy'),
+                    glowColor: 'rgba(0, 255, 170, 0.5)',
+                    premium: false
+                },
+                'heavy': {
+                    name: 'الكرة الثقيلة',
+                    price: 200,
+                    color: '#aa00ff',
+                    radius: 24,
+                    jumpForce: -10,
+                    description: 'تتحرك ببطء ولكنها تقاوم الرياح!',
+                    owned: ownedBalls.includes('heavy'),
+                    glowColor: 'rgba(170, 0, 255, 0.5)',
+                    premium: false
+                },
+                'fire': {
+                    name: 'كرة النار',
+                    price: 800,
+                    color: '#FF4B2B',
+                    radius: 21,
+                    jumpForce: -12.5,
+                    description: 'تحرق العقبات التي تلمسها!',
+                    owned: ownedBalls.includes('fire'),
+                    glowColor: 'rgba(255, 75, 43, 0.5)',
+                    premium: false
+                },
+                'rainbow': {
+                    name: 'كرة قوس قزح',
+                    price: 1000,
+                    color: 'rainbow',
+                    radius: 23,
+                    jumpForce: -11,
+                    description: 'تغير لونها باستمرار وتجذب العملات!',
+                    owned: ownedBalls.includes('rainbow'),
+                    glowColor: 'rgba(255, 0, 0, 0.5)',
+                    premium: false
+                },
+                'galactic': {
+                    name: 'الكرة المجرية',
+                    price: 1500,
+                    color: 'galactic',
+                    radius: 25,
+                    jumpForce: -10.5,
+                    description: 'تحتوي على مجرة مصغرة بداخلها!',
+                    owned: ownedBalls.includes('galactic'),
+                    glowColor: 'rgba(138, 43, 226, 0.5)',
+                    premium: true
+                },
+                'nebula': {
+                    name: 'كرة السديم',
+                    price: 2000,
+                    color: 'nebula',
+                    radius: 22,
+                    jumpForce: -11.5,
+                    description: 'تتوهج كسديم فضائي ساحر!',
+                    owned: ownedBalls.includes('nebula'),
+                    glowColor: 'rgba(75, 0, 130, 0.5)',
+                    premium: true
+                },
+                'blackhole': {
+                    name: 'كرة الثقب الأسود',
+                    price: 2500,
+                    color: '#000000',
+                    radius: 26,
+                    jumpForce: -9.5,
+                    description: 'تمتص العقبات القريبة منها!',
+                    owned: ownedBalls.includes('blackhole'),
+                    glowColor: 'rgba(255, 255, 255, 0.5)',
+                    premium: true
+                },
+                'electric': {
+                    name: 'الكرة الكهربائية',
+                    price: 1800,
+                    color: '#00FFFF',
+                    radius: 20,
+                    jumpForce: -13,
+                    description: 'تصعق العقبات بشرارات كهربائية!',
+                    owned: ownedBalls.includes('electric'),
+                    glowColor: 'rgba(0, 255, 255, 0.5)',
+                    premium: true
+                }
+            };
+            
+            // تعريف المراحل
+            const levels = [
+                {
+                    level: 1,
+                    name: "المرحلة الأولى",
+                    difficulty: "سهلة",
+                    description: "ابدأ رحلتك مع العقبات البسيطة",
+                    requiredScore: 0,
+                    speed: 3,
+                    gravity: 0.5,
+                    gap: 180,
+                    obstacleColor: "rgba(0, 255, 255, 0.8)",
+                    obstacleGlow: "rgba(0, 255, 255, 0.3)"
+                },
+                {
+                    level: 2,
+                    name: "المرحلة الثانية",
+                    difficulty: "متوسطة",
+                    description: "عقبات أسرع مع فجوات أصغر",
+                    requiredScore: 20,
+                    speed: 4,
+                    gravity: 0.6,
+                    gap: 160,
+                    obstacleColor: "rgba(0, 170, 255, 0.8)",
+                    obstacleGlow: "rgba(0, 170, 255, 0.3)"
+                },
+                {
+                    level: 3,
+                    name: "المرحلة الثالثة",
+                    difficulty: "صعبة",
+                    description: "تحكم أفضل مع جاذبية أقوى",
+                    requiredScore: 50,
+                    speed: 5,
+                    gravity: 0.7,
+                    gap: 140,
+                    obstacleColor: "rgba(170, 0, 255, 0.8)",
+                    obstacleGlow: "rgba(170, 0, 255, 0.3)"
+                },
+                {
+                    level: 4,
+                    name: "المرحلة الرابعة",
+                    difficulty: "متقدمة",
+                    description: "سرعة عالية مع عقبات متقاربة",
+                    requiredScore: 100,
+                    speed: 6,
+                    gravity: 0.8,
+                    gap: 120,
+                    obstacleColor: "rgba(255, 0, 170, 0.8)",
+                    obstacleGlow: "rgba(255, 0, 170, 0.3)"
+                },
+                {
+                    level: 5,
+                    name: "المرحلة الخامسة",
+                    difficulty: "خبير",
+                    description: "تحدي حقيقي للمحترفين فقط",
+                    requiredScore: 200,
+                    speed: 7,
+                    gravity: 0.9,
+                    gap: 100,
+                    obstacleColor: "rgba(255, 85, 0, 0.8)",
+                    obstacleGlow: "rgba(255, 85, 0, 0.3)"
+                },
+                {
+                    level: 6,
+                    name: "المرحلة النهائية",
+                    difficulty: "أسطورية",
+                    description: "أقصى درجات الصعوبة والتحدي",
+                    requiredScore: 500,
+                    speed: 8,
+                    gravity: 1.0,
+                    gap: 80,
+                    obstacleColor: "rgba(255, 255, 255, 0.8)",
+                    obstacleGlow: "rgba(255, 255, 255, 0.3)"
+                },
+                {
+                    level: 7,
+                    name: "مرحلة الفضاء العميق",
+                    difficulty: "خارقة",
+                    description: "عقبات متحركة بسرعات مختلفة",
+                    requiredScore: 800,
+                    speed: 9,
+                    gravity: 1.1,
+                    gap: 70,
+                    obstacleColor: "rgba(0, 255, 0, 0.8)",
+                    obstacleGlow: "rgba(0, 255, 0, 0.3)"
+                },
+                {
+                    level: 8,
+                    name: "مرحلة الثقب الأسود",
+                    difficulty: "مستحيلة",
+                    description: "الجاذبية تتغير باستمرار!",
+                    requiredScore: 1200,
+                    speed: 10,
+                    gravity: 1.2,
+                    gap: 60,
+                    obstacleColor: "rgba(255, 0, 0, 0.8)",
+                    obstacleGlow: "rgba(255, 0, 0, 0.3)"
+                },
+                {
+                    level: 9,
+                    name: "مرحلة الكون المتعدد",
+                    difficulty: "أسطورية+",
+                    description: "عقبات تظهر من جميع الاتجاهات",
+                    requiredScore: 2000,
+                    speed: 12,
+                    gravity: 1.5,
+                    gap: 50,
+                    obstacleColor: "rgba(255, 255, 0, 0.8)",
+                    obstacleGlow: "rgba(255, 255, 0, 0.3)"
+                },
+                {
+                    level: 10,
+                    name: "المرحلة النهائية المطلقة",
+                    difficulty: "إلهية",
+                    description: "هل يمكنك البقاء على قيد الحياة؟",
+                    requiredScore: 5000,
+                    speed: 15,
+                    gravity: 2.0,
+                    gap: 40,
+                    obstacleColor: "rgba(255, 0, 255, 0.8)",
+                    obstacleGlow: "rgba(255, 0, 255, 0.3)"
+                }
+            ];
+            
+            // خلفيات اللعبة
+            const backgrounds = [
+                {
+                    id: 'default',
+                    name: 'الخلفية الفضائية',
+                    gradient: ['#000000', '#000033', '#000066'],
+                    price: 0,
+                    owned: true,
+                    premium: false
+                },
+                {
+                    id: 'nebula',
+                    name: 'السديم',
+                    gradient: ['#1a0033', '#4d004d', '#800080'],
+                    price: 200,
+                    owned: ownedBalls.includes('background_nebula'),
+                    premium: false
+                },
+                {
+                    id: 'galaxy',
+                    name: 'المجرة',
+                    gradient: ['#000033', '#000066', '#000099'],
+                    price: 300,
+                    owned: ownedBalls.includes('background_galaxy'),
+                    premium: false
+                },
+                {
+                    id: 'stars',
+                    name: 'النجوم',
+                    gradient: ['#000022', '#001144', '#002266'],
+                    price: 250,
+                    owned: ownedBalls.includes('background_stars'),
+                    premium: false
+                },
+                {
+                    id: 'planet',
+                    name: 'الكوكب',
+                    gradient: ['#003322', '#006644', '#009966'],
+                    price: 350,
+                    owned: ownedBalls.includes('background_planet'),
+                    premium: false
+                },
+                {
+                    id: 'supernova',
+                    name: 'السوبرنوفا',
+                    gradient: ['#330000', '#660000', '#990000'],
+                    price: 400,
+                    owned: ownedBalls.includes('background_supernova'),
+                    premium: false
+                },
+                {
+                    id: 'deepspace',
+                    name: 'الفضاء العميق',
+                    gradient: ['#000011', '#000044', '#000077'],
+                    price: 600,
+                    owned: ownedBalls.includes('background_deepspace'),
+                    premium: true
+                },
+                {
+                    id: 'blackhole',
+                    name: 'ثقب أسود',
+                    gradient: ['#000000', '#111111', '#333333'],
+                    price: 800,
+                    owned: ownedBalls.includes('background_blackhole'),
+                    premium: true
+                },
+                {
+                    id: 'aurora',
+                    name: 'الأضواء القطبية',
+                    gradient: ['#000022', '#003322', '#006633'],
+                    price: 700,
+                    owned: ownedBalls.includes('background_aurora'),
+                    premium: true
+                },
+                {
+                    id: 'cosmic',
+                    name: 'الانفجار الكوني',
+                    gradient: ['#220000', '#550000', '#880000'],
+                    price: 900,
+                    owned: ownedBalls.includes('background_cosmic'),
+                    premium: true
+                },
+                {
+                    id: 'milkyway',
+                    name: 'درب التبانة',
+                    gradient: ['#000033', '#330033', '#660066'],
+                    price: 1000,
+                    owned: ownedBalls.includes('background_milkyway'),
+                    premium: true
+                }
+            ];
+            
+            // الكرة
+            const ball = {
+                x: canvas.width * 0.2,
+                y: canvas.height / 2,
+                radius: ballTypes[selectedBallType].radius,
+                color: ballTypes[selectedBallType].color,
+                glowColor: ballTypes[selectedBallType].glowColor,
+                velocityY: 0,
+                jumpForce: ballTypes[selectedBallType].jumpForce,
+                rainbowHue: 0,
+                galacticAngle: 0,
+                
+                draw() {
+                    // تأثير قوس قزح للكرة إذا كانت من نوع rainbow
+                    let drawColor = this.color;
+                    if (this.color === 'rainbow') {
+                        this.rainbowHue = (this.rainbowHue + 2) % 360;
+                        drawColor = `hsl(${this.rainbowHue}, 100%, 50%)`;
+                        this.glowColor = `hsla(${this.rainbowHue}, 100%, 50%, 0.5)`;
+                    } else if (this.color === 'galactic') {
+                        this.galacticAngle = (this.galacticAngle + 0.01) % (Math.PI * 2);
+                    }
+                    
+                    // رسم تأثير التوهج
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius * 1.5, 0, Math.PI * 2);
+                    ctx.fillStyle = this.glowColor;
+                    ctx.fill();
+                    
+                    // رسم الظل
+                    ctx.beginPath();
+                    ctx.ellipse(this.x, this.y + this.radius + 5, this.radius * 0.8, this.radius * 0.3, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                    ctx.fill();
+                    
+                    // رسم الكرة الأساسية
+                    if (this.color === 'galactic') {
+                        // رسم مجرة داخل الكرة
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                        ctx.clip();
+                        
+                        // خلفية المجرة
+                        const galacticGradient = ctx.createRadialGradient(
+                            this.x, this.y, 0,
+                            this.x, this.y, this.radius
+                        );
+                        galacticGradient.addColorStop(0, '#000033');
+                        galacticGradient.addColorStop(0.5, '#330066');
+                        galacticGradient.addColorStop(1, '#660099');
+                        
+                        ctx.fillStyle = galacticGradient;
+                        ctx.fillRect(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
+                        
+                        // رسم أذرع المجرة
+                        for (let i = 0; i < 4; i++) {
+                            const angle = this.galacticAngle + (i * Math.PI / 2);
+                            ctx.beginPath();
+                            ctx.moveTo(this.x, this.y);
+                            ctx.lineTo(
+                                this.x + Math.cos(angle) * this.radius,
+                                this.y + Math.sin(angle) * this.radius
+                            );
+                            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                            ctx.lineWidth = 2;
+                            ctx.stroke();
+                            
+                            // النجوم في الأذرع
+                            for (let j = 0.2; j < 1; j += 0.2) {
+                                const starX = this.x + Math.cos(angle) * this.radius * j;
+                                const starY = this.y + Math.sin(angle) * this.radius * j;
+                                ctx.beginPath();
+                                ctx.arc(starX, starY, 1 + j, 0, Math.PI * 2);
+                                ctx.fillStyle = 'white';
+                                ctx.fill();
+                            }
+                        }
+                        
+                        // النجوم في المركز
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.radius * 0.3, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                        ctx.fill();
+                        
+                        ctx.restore();
+                    } else if (this.color === 'nebula') {
+                        // تأثير سديم
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                        ctx.clip();
+                        
+                        const nebulaGradient = ctx.createRadialGradient(
+                            this.x, this.y, 0,
+                            this.x, this.y, this.radius
+                        );
+                        nebulaGradient.addColorStop(0, '#4B0082');
+                        nebulaGradient.addColorStop(0.5, '#8A2BE2');
+                        nebulaGradient.addColorStop(1, '#9370DB');
+                        
+                        ctx.fillStyle = nebulaGradient;
+                        ctx.fillRect(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
+                        
+                        // تأثيرات السديم
+                        for (let i = 0; i < 10; i++) {
+                            const size = Math.random() * this.radius * 0.5 + this.radius * 0.2;
+                            const x = this.x + (Math.random() - 0.5) * this.radius * 0.8;
+                            const y = this.y + (Math.random() - 0.5) * this.radius * 0.8;
+                            
+                            const gradient = ctx.createRadialGradient(
+                                x, y, 0,
+                                x, y, size
+                            );
+                            gradient.addColorStop(0, `rgba(${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 100)}, 255, 0.8)`);
+                            gradient.addColorStop(1, 'transparent');
+                            
+                            ctx.beginPath();
+                            ctx.arc(x, y, size, 0, Math.PI * 2);
+                            ctx.fillStyle = gradient;
+                            ctx.fill();
+                        }
+                        
+                        ctx.restore();
+                    } else {
+                        // رسم الكرة العادية
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = drawColor;
+                        ctx.fill();
+                    }
+                    
+                    ctx.closePath();
+                    
+                    // إضافة تأثير ثلاثي الأبعاد
+                    const gradient = ctx.createRadialGradient(
+                        this.x - this.radius/3, 
+                        this.y - this.radius/3, 
+                        this.radius/4, 
+                        this.x, 
+                        this.y, 
+                        this.radius
+                    );
+                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                    gradient.addColorStop(0.7, drawColor);
+                    gradient.addColorStop(1, shadeColor(drawColor, -30));
+                    
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+                    ctx.closePath();
+                    
+                    // إضافة حدود للكرة
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.closePath();
+                    
+                    // إضافة تفاصيل إضافية للكرة
+                    ctx.beginPath();
+                    ctx.arc(this.x - this.radius/3, this.y - this.radius/3, this.radius/6, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.fill();
+                    ctx.closePath();
+                    
+                    // إضافة تأثيرات إضافية للكرة
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([3, 3]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.closePath();
+                    
+                    // تأثيرات خاصة للكرة الكهربائية
+                    if (selectedBallType === 'electric' && Math.random() > 0.9) {
+                        const points = [];
+                        for (let i = 0; i < 10; i++) {
+                            const angle = Math.random() * Math.PI * 2;
+                            const dist = this.radius + Math.random() * 15;
+                            points.push({
+                                x: this.x + Math.cos(angle) * dist,
+                                y: this.y + Math.sin(angle) * dist
+                            });
+                        }
+                        
+                        ctx.strokeStyle = '#00FFFF';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(points[0].x, points[0].y);
+                        
+                        for (let i = 1; i < points.length; i++) {
+                            const midX = (points[i].x + points[i-1].x) / 2;
+                            const midY = (points[i].y + points[i-1].y) / 2;
+                            ctx.quadraticCurveTo(
+                                midX + (Math.random() - 0.5) * 10,
+                                midY + (Math.random() - 0.5) * 10,
+                                points[i].x, points[i].y
+                            );
+                        }
+                        
+                        ctx.stroke();
+                    }
+                },
+                
+                update() {
+                    this.velocityY += gravity;
+                    this.y += this.velocityY;
+                    
+                    // حدود الشاشة العلوية والسفلية
+                    if (this.y + this.radius > canvas.height) {
+                        this.y = canvas.height - this.radius;
+                        this.velocityY = 0;
+                        createParticles(this.x, this.y + this.radius, 10, this.color === 'rainbow' ? `hsl(${this.rainbowHue}, 100%, 50%)` : this.color);
+                    } else if (this.y - this.radius < 0) {
+                        this.y = this.radius;
+                        this.velocityY = 0;
+                    }
+                    
+                    // تأثير الثقب الأسود على العقبات القريبة
+                    if (selectedBallType === 'blackhole') {
+                        for (let i = 0; i < obstacles.length; i++) {
+                            const obstacle = obstacles[i];
+                            const dx = (obstacle.x + obstacle.width/2) - this.x;
+                            const dy = (obstacle.topHeight + obstacle.gap/2) - this.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance < 150) { // مسافة الجذب
+                                const force = 150 / (distance * distance);
+                                obstacle.x -= dx * force * 0.1;
+                                
+                                // إذا كانت العقبة قريبة جدًا، تختفي
+                                if (distance < 30) {
+                                    createParticles(obstacle.x + obstacle.width/2, obstacle.topHeight + obstacle.gap/2, 20, '#FFFFFF');
+                                    obstacles.splice(i, 1);
+                                    i--;
+                                }
+                            }
+                        }
+                    }
+                },
+                
+                jump() {
+                    this.velocityY = this.jumpForce;
+                    createParticles(this.x, this.y - this.radius, 5, '#FFFFFF');
+                    
+                    // تأثيرات خاصة عند القفز
+                    if (selectedBallType === 'electric') {
+                        for (let i = 0; i < 5; i++) {
+                            const angle = Math.random() * Math.PI * 2;
+                            const dist = this.radius + Math.random() * 20;
+                            createParticles(
+                                this.x + Math.cos(angle) * dist,
+                                this.y + Math.sin(angle) * dist,
+                                3, '#00FFFF'
+                            );
+                        }
+                    }
+                }
+            };
+            
+            // العقبات
+            class Obstacle {
+                constructor() {
+                    this.width = 40;
+                    this.gap = levels[currentLevel-1].gap;
+                    this.x = canvas.width;
+                    this.topHeight = Math.random() * (canvas.height - this.gap - 100) + 50;
+                    this.bottomY = this.topHeight + this.gap;
+                    this.color = levels[currentLevel-1].obstacleColor;
+                    this.glowColor = levels[currentLevel-1].obstacleGlow;
+                    this.passed = false;
+                    this.hasCoin = Math.random() > 0.7; // 30% فرصة لوجود عملة
+                    this.coinY = this.topHeight + this.gap/2;
+                    this.coinCollected = false;
+                    
+                    // في المراحل المتقدمة، قد تتحرك العقبات لأعلى ولأسفل
+                    if (currentLevel >= 7) {
+                        this.moving = Math.random() > 0.5;
+                        this.moveDirection = Math.random() > 0.5 ? 1 : -1;
+                        this.moveSpeed = Math.random() * 2 + 1;
+                    } else {
+                        this.moving = false;
+                    }
+                }
+                
+                draw() {
+                    // تأثير التوهج للعقبات
+                    ctx.beginPath();
+                    ctx.rect(this.x - 5, 0, this.width + 10, this.topHeight);
+                    ctx.rect(this.x - 5, this.bottomY, this.width + 10, canvas.height - this.bottomY);
+                    ctx.fillStyle = this.glowColor;
+                    ctx.fill();
+                    
+                    // العقبة العلوية مع تأثير ثلاثي الأبعاد
+                    const topGradient = ctx.createLinearGradient(this.x, 0, this.x + this.width, 0);
+                    topGradient.addColorStop(0, shadeColor(this.color, -20));
+                    topGradient.addColorStop(0.5, this.color);
+                    topGradient.addColorStop(1, shadeColor(this.color, -20));
+                    
+                    ctx.fillStyle = topGradient;
+                    ctx.fillRect(this.x, 0, this.width, this.topHeight);
+                    
+                    // العقبة السفلية مع تأثير ثلاثي الأبعاد
+                    const bottomGradient = ctx.createLinearGradient(this.x, this.bottomY, this.x + this.width, this.bottomY);
+                    bottomGradient.addColorStop(0, shadeColor(this.color, -20));
+                    bottomGradient.addColorStop(0.5, this.color);
+                    bottomGradient.addColorStop(1, shadeColor(this.color, -20));
+                    
+                    ctx.fillStyle = bottomGradient;
+                    ctx.fillRect(this.x, this.bottomY, this.width, canvas.height - this.bottomY);
+                    
+                    // إضافة حدود وتفاصيل ثلاثية الأبعاد
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(this.x, 0, this.width, this.topHeight);
+                    ctx.strokeRect(this.x, this.bottomY, this.width, canvas.height - this.bottomY);
+                    
+                    // إضافة خطوط أفقية للعمق
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                    ctx.lineWidth = 1;
+                    for (let y = 10; y < this.topHeight; y += 15) {
+                        ctx.beginPath();
+                        ctx.moveTo(this.x, y);
+                        ctx.lineTo(this.x + this.width, y);
+                        ctx.stroke();
+                    }
+                    
+                    for (let y = this.bottomY + 10; y < canvas.height; y += 15) {
+                        ctx.beginPath();
+                        ctx.moveTo(this.x, y);
+                        ctx.lineTo(this.x + this.width, y);
+                        ctx.stroke();
+                    }
+                    
+                    // إضافة تأثيرات تكنولوجية
+                    ctx.strokeStyle = 'rgba(0, 255, 255, 0.5)';
+                    ctx.setLineDash([5, 3]);
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(this.x + 5, 5, this.width - 10, this.topHeight - 10);
+                    ctx.strokeRect(this.x + 5, this.bottomY + 5, this.width - 10, canvas.height - this.bottomY - 10);
+                    ctx.setLineDash([]);
+                    
+                    // رسم العملة إذا كانت موجودة ولم يتم جمعها
+                    if (this.hasCoin && !this.coinCollected && this.x + this.width > 0) {
+                        // تأثير التوهج للعملة
+                        ctx.beginPath();
+                        ctx.arc(this.x + this.width/2, this.coinY, 15, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+                        ctx.fill();
+                        
+                        // العملة الذهبية
+                        const coinGradient = ctx.createRadialGradient(
+                            this.x + this.width/2 - 5, 
+                            this.coinY - 5, 
+                            2, 
+                            this.x + this.width/2, 
+                            this.coinY, 
+                            10
+                        );
+                        coinGradient.addColorStop(0, '#FFD700');
+                        coinGradient.addColorStop(0.5, '#FFCC00');
+                        coinGradient.addColorStop(1, '#FFAA00');
+                        
+                        ctx.beginPath();
+                        ctx.arc(this.x + this.width/2, this.coinY, 10, 0, Math.PI * 2);
+                        ctx.fillStyle = coinGradient;
+                        ctx.fill();
+                        
+                        ctx.beginPath();
+                        ctx.arc(this.x + this.width/2, this.coinY, 10, 0, Math.PI * 2);
+                        ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                        
+                        ctx.font = 'bold 12px Arial';
+                        ctx.fillStyle = 'black';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('$', this.x + this.width/2, this.coinY);
+                    }
+                }
+                
+                update() {
+                    this.x -= speed;
+                    
+                    // حركة العقبات لأعلى ولأسفل في المراحل المتقدمة
+                    if (this.moving) {
+                        if (currentLevel >= 8) {
+                            // في المرحلة 8 فما فوق، تتغير الاتجاهات عشوائياً
+                            if (Math.random() > 0.98) {
+                                this.moveDirection *= -1;
+                            }
+                        }
+                        
+                        this.topHeight += this.moveDirection * this.moveSpeed;
+                        this.bottomY = this.topHeight + this.gap;
+                        
+                        // تغيير الاتجاه عند الوصول للحواف
+                        if (this.topHeight < 20 || this.bottomY > canvas.height - 20) {
+                            this.moveDirection *= -1;
+                        }
+                        
+                        if (this.hasCoin && !this.coinCollected) {
+                            this.coinY = this.topHeight + this.gap/2;
+                        }
+                    }
+                    
+                    // اكتشاف الاصطدام
+                    if (
+                        ball.x + ball.radius > this.x && 
+                        ball.x - ball.radius < this.x + this.width && 
+                        (ball.y - ball.radius < this.topHeight || ball.y + ball.radius > this.bottomY)
+                    ) {
+                        // إذا كانت كرة النار تحرق العقبة
+                        if (selectedBallType === 'fire' && Math.random() > 0.7) {
+                            createParticles(this.x + this.width/2, this.topHeight + this.gap/2, 20, '#FF4B2B');
+                            obstacles.splice(obstacles.indexOf(this), 1);
+                        } 
+                        // إذا كانت الكرة الكهربائية تصعق العقبة
+                        else if (selectedBallType === 'electric' && Math.random() > 0.5) {
+                            createParticles(this.x + this.width/2, this.topHeight + this.gap/2, 15, '#00FFFF');
+                            obstacles.splice(obstacles.indexOf(this), 1);
+                        } else {
+                            gameOver();
+                        }
+                    }
+                    
+                    // جمع العملة
+                    if (this.hasCoin && !this.coinCollected && 
+                        ball.x + ball.radius > this.x && 
+                        ball.x - ball.radius < this.x + this.width && 
+                        ball.y > this.topHeight && ball.y < this.bottomY) {
+                        this.coinCollected = true;
+                        let coinsEarned = 1;
+                        
+                        // مكافآت إضافية للكرات الخاصة
+                        if (selectedBallType === 'golden' || selectedBallType === 'rainbow') coinsEarned = 2;
+                        if (selectedBallType === 'galactic') coinsEarned = 3;
+                        
+                        coins += coinsEarned;
+                        coinsDisplay.textContent = `العملات: ${coins}`;
+                        createParticles(this.x + this.width/2, this.coinY, 15, '#FFD700');
+                    }
+                    
+                    // زيادة النقاط عند تجاوز العقبة
+                    if (!this.passed && ball.x > this.x + this.width) {
+                        this.passed = true;
+                        let pointsEarned = 1;
+                        
+                        // مكافآت إضافية للكرات الخاصة
+                        if (selectedBallType === 'golden') pointsEarned = 2;
+                        if (selectedBallType === 'galactic') pointsEarned = 3;
+                        
+                        score += pointsEarned;
+                        scoreDisplay.textContent = `النقاط: ${score}`;
+                        createParticles(this.x + this.width/2, this.topHeight + this.gap/2, 15, '#FFD700');
+                    }
+                }
+            }
+            
+            // الجسيمات للتأثيرات
+            class Particle {
+                constructor(x, y, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.size = Math.random() * 5 + 2;
+                    this.color = color;
+                    this.velocityX = Math.random() * 6 - 3;
+                    this.velocityY = Math.random() * 6 - 3;
+                    this.alpha = 1;
+                    this.decay = Math.random() * 0.05 + 0.01;
+                    this.gravity = 0.1;
+                }
+                
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // إضافة توهج للجسيمات
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color.replace(')', ', 0.3)').replace('rgb', 'rgba');
+                    ctx.fill();
+                    ctx.restore();
+                }
+                
+                update() {
+                    this.x += this.velocityX;
+                    this.y += this.velocityY;
+                    this.velocityY += this.gravity;
+                    this.alpha -= this.decay;
+                }
+            }
+            
+            // وظيفة مساعدة لتغيير لون الظل
+            function shadeColor(color, percent) {
+                if (color.includes('hsl')) return color;
+                if (color.includes('rgba')) {
+                    const parts = color.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+                    if (!parts) return color;
+                    
+                    let r = parseInt(parts[1]);
+                    let g = parseInt(parts[2]);
+                    let b = parseInt(parts[3]);
+                    const a = parseFloat(parts[4]);
+                    
+                    r = parseInt(r * (100 + percent) / 100);
+                    g = parseInt(g * (100 + percent) / 100);
+                    b = parseInt(b * (100 + percent) / 100);
+                    
+                    r = Math.min(255, Math.max(0, r));
+                    g = Math.min(255, Math.max(0, g));
+                    b = Math.min(255, Math.max(0, b));
+                    
+                    return `rgba(${r}, ${g}, ${b}, ${a})`;
+                }
+                
+                let R = parseInt(color.substring(1,3), 16);
+                let G = parseInt(color.substring(3,5), 16);
+                let B = parseInt(color.substring(5,7), 16);
+
+                R = parseInt(R * (100 + percent) / 100);
+                G = parseInt(G * (100 + percent) / 100);
+                B = parseInt(B * (100 + percent) / 100);
+
+                R = (R<255)?R:255;  
+                G = (G<255)?G:255;  
+                B = (B<255)?B:255;  
+
+                R = Math.round(R);
+                G = Math.round(G);
+                B = Math.round(B);
+
+                const RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+                const GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+                const BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+
+                return "#"+RR+GG+BB;
+            }
+            
+            // إنشاء جسيمات للتأثيرات
+            function createParticles(x, y, count, color) {
+                for (let i = 0; i < count; i++) {
+                    particles.push(new Particle(x, y, color));
+                }
+            }
+            
+            // رسم خلفية اللعبة
+            function drawBackground() {
+                // إذا كانت هناك خلفية مخصصة
+                if (currentBackground === 'custom' && (backgroundImage || backgroundVideo)) {
+                    if (backgroundVideo && videoElement) {
+                        // رسم الفيديو كخلفية
+                        ctx.globalAlpha = 0.7;
+                        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                        ctx.globalAlpha = 1.0;
+                    } else if (backgroundImage) {
+                        // رسم الصورة كخلفية
+                        ctx.globalAlpha = 0.7;
+                        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+                        ctx.globalAlpha = 1.0;
+                    }
+                    
+                    // إضافة طبقة داكنة فوق الخلفية المخصصة
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                } else {
+                    // خلفية افتراضية
+                    const bg = backgrounds.find(b => b.id === currentBackground) || backgrounds[0];
+                    
+                    // خلفية متدرجة
+                    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                    gradient.addColorStop(0, bg.gradient[0]);
+                    gradient.addColorStop(0.5, bg.gradient[1]);
+                    gradient.addColorStop(1, bg.gradient[2]);
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+                
+                // إضافة نجوم في الخلفية
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                for (let i = 0; i < 100; i++) {
+                    if (i % 10 === 0) { // كل 10 إطارات نحرك النجوم
+                        const starX = Math.random() * canvas.width;
+                        const starY = Math.random() * canvas.height;
+                        const starSize = Math.random() * 2 + 1;
+                        
+                        ctx.beginPath();
+                        ctx.arc(starX, starY, starSize, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                
+                // إضافة تأثيرات تكنولوجية للخلفية
+                ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
+                ctx.lineWidth = 1;
+                
+                // خطوط أفقية
+                for (let y = 0; y < canvas.height; y += 50) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+                
+                // خطوط عمودية
+                for (let x = 0; x < canvas.width; x += 50) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                
+                // إضافة تأثير شبكة تكنولوجية
+                ctx.strokeStyle = 'rgba(0, 255, 255, 0.05)';
+                ctx.setLineDash([5, 5]);
+                for (let y = 0; y < canvas.height; y += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+                for (let x = 0; x < canvas.width; x += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                ctx.setLineDash([]);
+                
+                // تأثيرات خاصة للخلفيات المميزة
+                if (currentBackground === 'deepspace') {
+                    // إضافة مجرات بعيدة
+                    for (let i = 0; i < 3; i++) {
+                        const galaxyX = (frameCount * 0.1 + i * 1000) % (canvas.width + 200) - 100;
+                        const galaxyY = 50 + i * 150;
+                        const size = 30 + i * 10;
+                        
+                        ctx.beginPath();
+                        ctx.arc(galaxyX, galaxyY, size, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(${50 + i * 50}, ${50 + i * 30}, ${150 + i * 50}, 0.3)`;
+                        ctx.fill();
+                    }
+                } else if (currentBackground === 'aurora') {
+                    // إضافة تأثير الأضواء القطبية
+                    for (let i = 0; i < 3; i++) {
+                        const waveHeight = 50 + i * 30;
+                        const waveY = canvas.height / 3 + i * 50;
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(0, waveY);
+                        
+                        for (let x = 0; x < canvas.width; x += 20) {
+                            const y = waveY + Math.sin(x * 0.02 + frameCount * 0.02 + i) * waveHeight;
+                            ctx.lineTo(x, y);
+                        }
+                        
+                        ctx.lineTo(canvas.width, canvas.height);
+                        ctx.lineTo(0, canvas.height);
+                        ctx.closePath();
+                        
+                        const gradient = ctx.createLinearGradient(0, waveY, 0, waveY + waveHeight * 2);
+                        gradient.addColorStop(0, `rgba(0, ${150 + i * 50}, ${100 + i * 50}, 0.3)`);
+                        gradient.addColorStop(1, 'transparent');
+                        
+                        ctx.fillStyle = gradient;
+                        ctx.fill();
+                    }
+                }
+            }
+            
+            // عرض المتجر
+            function renderShop() {
+                shopItemsContainer.innerHTML = '';
+                
+                for (const [type, ball] of Object.entries(ballTypes)) {
+                    // إخفاء الكرات المميزة إذا لم يكن اللاعب مميزاً
+                    if (ball.premium && !isPremium) continue;
+                    
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'shop-item';
+                    
+                    const ballPreview = document.createElement('div');
+                    ballPreview.className = 'ball-preview';
+                    
+                    if (type === 'rainbow') {
+                        ballPreview.style.background = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
+                    } else if (type === 'galactic') {
+                        ballPreview.style.background = 'radial-gradient(circle, #000033, #330066, #660099)';
+                    } else if (type === 'nebula') {
+                        ballPreview.style.background = 'radial-gradient(circle, #4B0082, #8A2BE2, #9370DB)';
+                    } else {
+                        ballPreview.style.background = ball.color;
+                    }
+                    
+                    ballPreview.style.color = ball.color;
+                    
+                    const itemInfo = document.createElement('div');
+                    itemInfo.className = 'item-info';
+                    
+                    const itemName = document.createElement('div');
+                    itemName.className = 'item-name';
+                    itemName.textContent = ball.name;
+                    
+                    const itemPrice = document.createElement('div');
+                    itemPrice.className = 'item-price';
+                    itemPrice.textContent = `السعر: ${ball.price} عملة`;
+                    
+                    const itemDesc = document.createElement('div');
+                    itemDesc.className = 'item-description';
+                    itemDesc.textContent = ball.description;
+                    
+                    itemInfo.appendChild(itemName);
+                    itemInfo.appendChild(itemPrice);
+                    itemInfo.appendChild(itemDesc);
+                    
+                    const buyBtn = document.createElement('button');
+                    buyBtn.className = 'buy-btn';
+                    
+                    if (ball.owned) {
+                        if (selectedBallType === type) {
+                            buyBtn.textContent = 'محددة';
+                            buyBtn.disabled = true;
+                        } else {
+                            buyBtn.textContent = 'اختر';
+                            buyBtn.onclick = () => selectBall(type);
+                        }
+                    } else {
+                        buyBtn.textContent = 'شراء';
+                        buyBtn.disabled = coins < ball.price;
+                        buyBtn.onclick = () => purchaseBall(type, ball.price);
+                    }
+                    
+                    itemEl.appendChild(ballPreview);
+                    itemEl.appendChild(itemInfo);
+                    itemEl.appendChild(buyBtn);
+                    
+                    if (ball.owned && selectedBallType === type) {
+                        const ownedBadge = document.createElement('div');
+                        ownedBadge.className = 'owned-badge';
+                        ownedBadge.textContent = 'محددة';
+                        itemEl.appendChild(ownedBadge);
+                    } else if (ball.owned) {
+                        const ownedBadge = document.createElement('div');
+                        ownedBadge.className = 'owned-badge';
+                        ownedBadge.textContent = 'مملوكة';
+                        itemEl.appendChild(ownedBadge);
+                    }
+                    
+                    if (ball.premium) {
+                        const premiumBadge = document.createElement('div');
+                        premiumBadge.className = 'premium-badge';
+                        premiumBadge.textContent = 'مميزة';
+                        itemEl.appendChild(premiumBadge);
+                    }
+                    
+                    shopItemsContainer.appendChild(itemEl);
+                }
+            }
+            
+            // شراء كرة جديدة
+            function purchaseBall(type, price) {
+                if (coins >= price) {
+                    coins -= price;
+                    coinsDisplay.textContent = `العملات: ${coins}`;
+                    localStorage.setItem('coins', coins);
+                    
+                    ballTypes[type].owned = true;
+                    ownedBalls.push(type);
+                    localStorage.setItem('ownedBalls', JSON.stringify(ownedBalls));
+                    
+                    renderShop();
+                }
+            }
+            
+            // اختيار كرة للاستخدام
+            function selectBall(type) {
+                selectedBallType = type;
+                localStorage.setItem('selectedBall', type);
+                
+                // تحديث خصائص الكرة
+                ball.radius = ballTypes[type].radius;
+                ball.color = ballTypes[type].color;
+                ball.glowColor = ballTypes[type].glowColor;
+                ball.jumpForce = ballTypes[type].jumpForce;
+                
+                renderShop();
+            }
+            
+            // عرض خيارات الخلفية
+            function renderBackgroundOptions() {
+                backgroundOptionsContainer.innerHTML = '';
+                
+                // إضافة خيار الخلفية المخصصة إذا كانت موجودة
+                if (customBackground) {
+                    const customBgEl = document.createElement('div');
+                    customBgEl.className = 'background-option';
+                    customBgEl.style.border = currentBackground === 'custom' ? '2px solid #00ffff' : '1px solid rgba(0, 255, 255, 0.3)';
+                    
+                    const customPreview = document.createElement('div');
+                    customPreview.className = 'background-preview';
+                    customPreview.style.backgroundImage = `url(${customBackground})`;
+                    customPreview.style.backgroundSize = 'cover';
+                    
+                    const customName = document.createElement('div');
+                    customName.className = 'background-name';
+                    customName.textContent = 'خلفيتك المخصصة';
+                    
+                    customBgEl.appendChild(customPreview);
+                    customBgEl.appendChild(customName);
+                    
+                    if (currentBackground === 'custom') {
+                        customBgEl.style.boxShadow = '0 0 15px rgba(0, 255, 255, 0.5)';
+                    } else {
+                        customBgEl.onclick = () => selectBackground('custom');
+                    }
+                    
+                    backgroundOptionsContainer.appendChild(customBgEl);
+                }
+                
+                backgrounds.forEach(bg => {
+                    // إخفاء الخلفيات المميزة إذا لم يكن اللاعب مميزاً
+                    if (bg.premium && !isPremium) return;
+                    
+                    const bgEl = document.createElement('div');
+                    bgEl.className = 'background-option';
+                    
+                    const bgPreview = document.createElement('div');
+                    bgPreview.className = 'background-preview';
+                    bgPreview.style.background = `linear-gradient(to bottom, ${bg.gradient.join(', ')})`;
+                    
+                    const bgName = document.createElement('div');
+                    bgName.className = 'background-name';
+                    bgName.textContent = bg.name;
+                    
+                    bgEl.appendChild(bgPreview);
+                    bgEl.appendChild(bgName);
+                    
+                    if (bg.owned) {
+                        if (currentBackground === bg.id) {
+                            bgEl.style.border = '2px solid #00ffff';
+                            bgEl.style.boxShadow = '0 0 15px rgba(0, 255, 255, 0.5)';
+                        } else {
+                            bgEl.onclick = () => selectBackground(bg.id);
+                        }
+                    } else {
+                        const bgPrice = document.createElement('div');
+                        bgPrice.className = 'item-price';
+                        bgPrice.textContent = `${bg.price} عملة`;
+                        bgEl.appendChild(bgPrice);
+                        
+                        const buyBtn = document.createElement('button');
+                        buyBtn.className = 'buy-btn';
+                        buyBtn.textContent = 'شراء';
+                        buyBtn.disabled = coins < bg.price;
+                        buyBtn.onclick = () => purchaseBackground(bg.id, bg.price);
+                        bgEl.appendChild(buyBtn);
+                    }
+                    
+                    if (bg.premium) {
+                        const premiumBadge = document.createElement('div');
+                        premiumBadge.className = 'premium-badge';
+                        premiumBadge.textContent = 'مميزة';
+                        bgEl.appendChild(premiumBadge);
+                    }
+                    
+                    backgroundOptionsContainer.appendChild(bgEl);
+                });
+            }
+            
+            // شراء خلفية جديدة
+            function purchaseBackground(id, price) {
+                if (coins >= price) {
+                    coins -= price;
+                    coinsDisplay.textContent = `العملات: ${coins}`;
+                    localStorage.setItem('coins', coins);
+                    
+                    const bg = backgrounds.find(b => b.id === id);
+                    if (bg) bg.owned = true;
+                    
+                    localStorage.setItem(`background_${id}`, 'owned');
+                    renderBackgroundOptions();
+                }
+            }
+            
+            // اختيار خلفية للاستخدام
+            function selectBackground(id) {
+                currentBackground = id;
+                localStorage.setItem('gameBackground', id);
+                
+                // إذا كانت الخلفية المخصصة، تأكد من تحميل الوسائط
+                if (id === 'custom') {
+                    if (customBackground) {
+                        if (customBackground.endsWith('.mp4') || customBackground.endsWith('.webm')) {
+                            loadVideoBackground(customBackground);
+                        } else {
+                            loadImageBackground(customBackground);
+                        }
+                    }
+                } else {
+                    // إيقاف أي فيديو يعمل إذا كان هناك واحد
+                    if (videoElement) {
+                        videoElement.pause();
+                        videoElement = null;
+                    }
+                    backgroundImage = null;
+                }
+                
+                renderBackgroundOptions();
+            }
+            
+            // تحميل صورة الخلفية
+            function loadImageBackground(imageUrl) {
+                backgroundImage = new Image();
+                backgroundImage.src = imageUrl;
+                backgroundImage.onload = () => {
+                    if (videoElement) {
+                        videoElement.pause();
+                        videoElement = null;
+                    }
+                };
+            }
+            
+            // تحميل فيديو الخلفية
+            function loadVideoBackground(videoUrl) {
+                if (videoElement) {
+                    videoElement.pause();
+                }
+                
+                videoElement = document.createElement('video');
+                videoElement.src = videoUrl;
+                videoElement.loop = true;
+                videoElement.muted = true;
+                videoElement.playsInline = true;
+                videoElement.style.display = 'none';
+                document.body.appendChild(videoElement);
+                
+                videoElement.play().catch(e => console.error('Error playing video:', e));
+                
+                backgroundImage = null;
+            }
+            
+            // عرض المراحل
+            function renderLevels() {
+                levelsContainer.innerHTML = '';
+                
+                levels.forEach(level => {
+                    const levelEl = document.createElement('div');
+                    levelEl.className = `level-card ${unlockedLevels.includes(level.level) ? 'unlocked' : 'locked'}`;
+                    
+                    const levelNumber = document.createElement('div');
+                    levelNumber.className = 'level-number';
+                    levelNumber.textContent = `المرحلة ${level.level}`;
+                    
+                    const levelName = document.createElement('div');
+                    levelName.className = 'item-name';
+                    levelName.textContent = level.name;
+                    
+                    const levelDiff = document.createElement('div');
+                    levelDiff.className = 'level-difficulty';
+                    levelDiff.textContent = `الصعوبة: ${level.difficulty}`;
+                    
+                    const levelDesc = document.createElement('div');
+                    levelDesc.className = 'item-description';
+                    levelDesc.textContent = level.description;
+                    
+                    levelEl.appendChild(levelNumber);
+                    levelEl.appendChild(levelName);
+                    levelEl.appendChild(levelDiff);
+                    levelEl.appendChild(levelDesc);
+                    
+                    if (!unlockedLevels.includes(level.level)) {
+                        const lockIcon = document.createElement('div');
+                        lockIcon.className = 'lock-icon';
+                        lockIcon.innerHTML = '🔒';
+                        
+                        const reqText = document.createElement('div');
+                        reqText.className = 'level-requirements';
+                        reqText.textContent = `تتطلب ${level.requiredScore} نقطة`;
+                        
+                        levelEl.appendChild(lockIcon);
+                        levelEl.appendChild(reqText);
+                    } else {
+                        levelEl.onclick = () => selectLevel(level.level);
+                        
+                        if (currentLevel === level.level) {
+                            levelEl.style.border = '2px solid #00ffff';
+                            levelEl.style.boxShadow = '0 0 15px rgba(0, 255, 255, 0.5)';
+                        }
+                    }
+                    
+                    levelsContainer.appendChild(levelEl);
+                });
+            }
+            
+            // اختيار مرحلة
+            function selectLevel(level) {
+                currentLevel = level;
+                localStorage.setItem('currentLevel', level);
+                levelDisplay.textContent = `المرحلة: ${level}`;
+                renderLevels();
+            }
+            
+            // بدء اللعبة
+            function startGame() {
+                gameRunning = true;
+                score = 0;
+                obstacles = [];
+                particles = [];
+                speed = levels[currentLevel-1].speed;
+                gravity = levels[currentLevel-1].gravity;
+                ball.y = canvas.height / 2;
+                ball.velocityY = 0;
+                obstacleFrequency = 120;
+                
+                startScreen.style.display = 'none';
+                gameOverScreen.style.display = 'none';
+                shopScreen.style.display = 'none';
+                levelsScreen.style.display = 'none';
+                backgroundScreen.style.display = 'none';
+                scoreDisplay.textContent = `النقاط: ${score}`;
+                
+                // بدء حلقة اللعبة
+                gameLoop();
+            }
+            
+            // نهاية اللعبة
+            function gameOver() {
+                gameRunning = false;
+                cancelAnimationFrame(animationId);
+                
+                // حساب العملات المكتسبة (1 عملة لكل 5 نقاط)
+                const earned = Math.floor(score / 5);
+                coins += earned;
+                localStorage.setItem('coins', coins);
+                earnedCoinsDisplay.textContent = earned;
+                
+                // التحقق من أعلى نتيجة
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('highScore', highScore);
+                    newHighScoreDisplay.style.display = 'block';
+                } else {
+                    newHighScoreDisplay.style.display = 'none';
+                }
+                
+                // التحقق من فتح مراحل جديدة
+                const newUnlocked = levels.filter(l => 
+                    !unlockedLevels.includes(l.level) && 
+                    score >= l.requiredScore
+                ).map(l => l.level);
+                
+                if (newUnlocked.length > 0) {
+                    unlockedLevels = [...unlockedLevels, ...newUnlocked];
+                    localStorage.setItem('unlockedLevels', JSON.stringify(unlockedLevels));
+                }
+                
+                finalScoreDisplay.textContent = `النقاط: ${score}`;
+                highScoreDisplay.textContent = `أعلى نتيجة: ${highScore}`;
+                coinsDisplay.textContent = `العملات: ${coins}`;
+                gameOverScreen.style.display = 'flex';
+                
+                // تأثير جسيمات عند الخسارة
+                for (let i = 0; i < 50; i++) {
+                    createParticles(ball.x, ball.y, 1, `hsl(${Math.random() * 360}, 70%, 50%)`);
+                }
+            }
+            
+            // حلقة اللعبة الرئيسية
+            function gameLoop() {
+                animationId = requestAnimationFrame(gameLoop);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // رسم الخلفية
+                drawBackground();
+                
+                // رسم وتحديث الكرة
+                ball.draw();
+                ball.update();
+                
+                // توليد عقبات جديدة
+                frameCount++;
+                if (gameRunning && (obstacles.length === 0 || 
+                    (frameCount % obstacleFrequency === 0 && obstacles[obstacles.length - 1].x < canvas.width - 200))) {
+                    obstacles.push(new Obstacle());
+                    
+                    // تقليل الفترة بين العقبات مع تقدم اللعبة
+                    if (obstacleFrequency > 60) {
+                        obstacleFrequency -= 0.5;
+                    }
+                }
+                
+                // رسم وتحديث العقبات
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    obstacles[i].draw();
+                    obstacles[i].update();
+                    
+                    // إزالة العقبات التي خرجت من الشاشة
+                    if (obstacles[i].x + obstacles[i].width < 0) {
+                        obstacles.splice(i, 1);
+                    }
+                }
+                
+                // رسم وتحديث الجسيمات
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    particles[i].draw();
+                    particles[i].update();
+                    
+                    // إزالة الجسيمات التي اختفت
+                    if (particles[i].alpha <= 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+                
+                // زيادة الصعوبة مع الوقت
+                if (score > 0 && score % 10 === 0 && speed < levels[currentLevel-1].speed * 1.5) {
+                    speed += 0.005;
+                }
+            }
+            
+            // معالجة رفع الملف
+            uploadBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const fileType = file.type.split('/')[0];
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    const fileUrl = event.target.result;
+                    customBackground = fileUrl;
+                    localStorage.setItem('customBackground', fileUrl);
+                    
+                    if (fileType === 'video') {
+                        loadVideoBackground(fileUrl);
+                    } else {
+                        loadImageBackground(fileUrl);
+                    }
+                    
+                    // تحديد الخلفية المخصصة تلقائياً
+                    selectBackground('custom');
+                    
+                    // إعادة عرض خيارات الخلفية
+                    renderBackgroundOptions();
+                };
+                
+                if (fileType === 'video') {
+                    reader.readAsDataURL(file);
+                } else {
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // أحداث التحكم
+            canvas.addEventListener('click', () => {
+                if (gameRunning) {
+                    ball.jump();
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (gameRunning && (e.code === 'Space' || e.key === ' ' || e.key === 'Enter')) {
+                    ball.jump();
+                }
+            });
+            
+            // أحداث اللمس للأجهزة المحمولة
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (gameRunning) {
+                    ball.jump();
+                }
+            }, { passive: false });
+            
+            // أحداث الأزرار
+            startBtn.addEventListener('click', startGame);
+            restartBtn.addEventListener('click', startGame);
+            backToMenuBtn.addEventListener('click', () => {
+                gameOverScreen.style.display = 'none';
+                startScreen.style.display = 'flex';
+            });
+            
+            shopBtn.addEventListener('click', () => {
+                startScreen.style.display = 'none';
+                shopScreen.style.display = 'flex';
+                renderShop();
+            });
+            
+            backFromShopBtn.addEventListener('click', () => {
+                shopScreen.style.display = 'none';
+                startScreen.style.display = 'flex';
+            });
+            
+            levelsBtn.addEventListener('click', () => {
+                startScreen.style.display = 'none';
+                levelsScreen.style.display = 'flex';
+                renderLevels();
+            });
+            
+            backFromLevelsBtn.addEventListener('click', () => {
+                levelsScreen.style.display = 'none';
+                startScreen.style.display = 'flex';
+            });
+            
+            backgroundBtn.addEventListener('click', () => {
+                startScreen.style.display = 'none';
+                backgroundScreen.style.display = 'flex';
+                renderBackgroundOptions();
+            });
+            
+            backFromBackgroundBtn.addEventListener('click', () => {
+                backgroundScreen.style.display = 'none';
+                startScreen.style.display = 'flex';
+            });
+            
+            premiumBtn.addEventListener('click', () => {
+                alert('المميزات المدفوعة توفر كرات وخلفيات حصرية! يمكنك شراء النسخة المدفوعة من متجر التطبيقات.');
+                // في التطبيق الحقيقي، يمكنك ربط هذا بزر الشراء في المتجر
+            });
+            
+            // تهيئة اللعبة
+            highScoreDisplay.textContent = `أعلى نتيجة: ${highScore}`;
+            coinsDisplay.textContent = `العملات: ${coins}`;
+            levelDisplay.textContent = `المرحلة: ${currentLevel}`;
+            
+            // تحديث خصائص الكرة حسب النوع المختار
+            ball.radius = ballTypes[selectedBallType].radius;
+            ball.color = ballTypes[selectedBallType].color;
+            ball.glowColor = ballTypes[selectedBallType].glowColor;
+            ball.jumpForce = ballTypes[selectedBallType].jumpForce;
+            
+            // تحميل الخلفيات المملوكة
+            backgrounds.forEach(bg => {
+                if (localStorage.getItem(`background_${bg.id}`)) {
+                    bg.owned = true;
+                }
+            });
+            
+            // تحميل الخلفية المخصصة إذا كانت موجودة
+            const savedBackground = localStorage.getItem('customBackground');
+            if (savedBackground) {
+                customBackground = savedBackground;
+                if (savedBackground.endsWith('.mp4') || savedBackground.endsWith('.webm')) {
+                    loadVideoBackground(savedBackground);
+                } else {
+                    loadImageBackground(savedBackground);
+                }
+                
+                // إذا كانت الخلفية الحالية مخصصة، تأكد من تحميل الوسائط
+                if (currentBackground === 'custom') {
+                    if (savedBackground.endsWith('.mp4') || savedBackground.endsWith('.webm')) {
+                        loadVideoBackground(savedBackground);
+                    } else {
+                        loadImageBackground(savedBackground);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
             border-radius: 20px;
             box-shadow: 0 15px 30px rgba(0, 255, 255, 0.3);
             overflow: hidden;
